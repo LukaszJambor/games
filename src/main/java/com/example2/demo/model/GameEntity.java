@@ -1,8 +1,5 @@
-package com.example2.demo.entity;
+package com.example2.demo.model;
 
-import com.example2.demo.enums.DistributionPath;
-
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -18,16 +15,12 @@ public class GameEntity {
     @Id
     private Long id;
 
-    @Column
     private String name;
 
-    @Column
     private String type;
 
-    @Column
     private String producer;
 
-    @Column
     private DistributionPath distributionPath;
 
     public Long getId() {

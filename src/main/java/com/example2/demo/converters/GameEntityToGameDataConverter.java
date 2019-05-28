@@ -1,7 +1,7 @@
 package com.example2.demo.converters;
 
 import com.example2.demo.data.GameData;
-import com.example2.demo.entity.GameEntity;
+import com.example2.demo.model.GameEntity;
 import org.springframework.stereotype.Component;
 
 /**

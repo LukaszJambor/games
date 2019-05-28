@@ -1,6 +1,7 @@
 package com.example2.demo.dao;
 
-import com.example2.demo.entity.GameEntity;
+import com.example2.demo.model.GameEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
 
@@ -11,6 +12,6 @@ import java.util.List;
  */
 
 @Component
-public interface GameDao extends CrudRepository<GameEntity, Long> {
+public interface GameRepository extends CrudRepository<GameEntity, Long>, JpaRepository<GameEntity, Long> {
     public List<GameEntity> findGameByNameOrProducer(String name, String producer);
 }

@@ -2,14 +2,14 @@ package com.example2.demo.services;
 
 import com.example2.demo.converters.GameDataToGameEntityConverter;
 import com.example2.demo.converters.GameEntityToGameDataConverter;
-import com.example2.demo.dao.GameDao;
+import com.example2.demo.dao.GameRepository;
 import com.example2.demo.data.GameData;
-import com.example2.demo.entity.GameEntity;
+import com.example2.demo.model.GameEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by USER on 25.05.2019.
@@ -18,35 +18,36 @@ import java.util.List;
 @Component
 public class GameService {
 
-    @Autowired
     private GameDataToGameEntityConverter gameDataToGameEntityConverter;
-
-    @Autowired
     private GameEntityToGameDataConverter gameEntityToGameDataConverter;
+    private GameRepository gameRepository;
 
     @Autowired
-    private GameDao gameDao;
+    public GameService(GameDataToGameEntityConverter gameDataToGameEntityConverter, GameEntityToGameDataConverter gameEntityToGameDataConverter,
+                       GameRepository gameRepository) {
+        this.gameDataToGameEntityConverter = gameDataToGameEntityConverter;
+        this.gameEntityToGameDataConverter = gameEntityToGameDataConverter;
+        this.gameRepository = gameRepository;
+    }
 
-    public void addGame(GameData gameData){
+    public void addGame(GameData gameData) {
         GameEntity gameEntity = gameDataToGameEntityConverter.covert(gameData);
-        gameDao.save(gameEntity);
+        gameRepository.save(gameEntity);
     }
 
     public List<GameData> getGames() {
-        Iterable<GameEntity> all = gameDao.findAll();
-        List<GameData> gameDataList = new ArrayList<>();
-        all.forEach(gameEntity -> convert(gameEntity, gameDataList));
-        return gameDataList;
-    }
-
-    private void convert(GameEntity gameEntity, List<GameData> gameDataList) {
-        gameDataList.add(gameEntityToGameDataConverter.convert(gameEntity));
+        List<GameEntity> all = gameRepository.findAll();
+        return convertToData(all);
     }
 
     public List<GameData> getGames(String name, String producer) {
-        List<GameEntity> gameByNameOrProducer = gameDao.findGameByNameOrProducer(name, producer);
-        List<GameData> gameDataList = new ArrayList<>();
-        gameByNameOrProducer.forEach(gameEntity -> convert(gameEntity, gameDataList));
-        return gameDataList;
+        List<GameEntity> gameByNameOrProducer = gameRepository.findGameByNameOrProducer(name, producer);
+        return convertToData(gameByNameOrProducer);
+    }
+
+    private List<GameData> convertToData(List<GameEntity> all) {
+        return all.stream()
+                .map(game -> gameEntityToGameDataConverter.convert(game))
+                .collect(Collectors.toList());
     }
 }

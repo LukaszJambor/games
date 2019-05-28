@@ -14,8 +14,12 @@ import java.util.List;
 @Component
 public class GameFacade {
 
-    @Autowired
     private GameService gameService;
+
+    @Autowired
+    public GameFacade(GameService gameService) {
+        this.gameService = gameService;
+    }
 
     public void addGame(GameData gameData) {
         gameService.addGame(gameData);

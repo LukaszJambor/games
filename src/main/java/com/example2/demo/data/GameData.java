@@ -1,6 +1,6 @@
 package com.example2.demo.data;
 
-import com.example2.demo.enums.DistributionPath;
+import com.example2.demo.model.DistributionPath;
 
 /**
  * Created by USER on 25.05.2019.

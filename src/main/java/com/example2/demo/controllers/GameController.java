@@ -18,8 +18,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class GameController {
 
-    @Autowired
     private GameFacade gameFacade;
+
+    @Autowired
+    public GameController(GameFacade gameFacade) {
+        this.gameFacade = gameFacade;
+    }
 
     @RequestMapping(value = "/addGame", method = RequestMethod.GET)
     public String addGameView(Model model) {
