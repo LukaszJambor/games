@@ -2,8 +2,7 @@ package com.example2.demo.controllers;
 
 import com.example2.demo.data.GameData;
 import com.example2.demo.data.QueryData;
-import com.example2.demo.facades.GameFacade;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example2.demo.services.GameService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -18,11 +17,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class GameController {
 
-    private GameFacade gameFacade;
+    private GameService gameService;
 
-    @Autowired
-    public GameController(GameFacade gameFacade) {
-        this.gameFacade = gameFacade;
+    public GameController(GameService gameService) {
+        this.gameService = gameService;
     }
 
     @RequestMapping(value = "/addGame", method = RequestMethod.GET)
@@ -33,16 +31,16 @@ public class GameController {
 
     @RequestMapping(value = "/addGame", method = RequestMethod.POST)
     public String addGame(@ModelAttribute("gameData") GameData gameData) {
-        gameFacade.addGame(gameData);
+        gameService.addGame(gameData);
         return "redirect:/";
     }
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String showGames(@RequestParam(value = "name", required = false) String name, @RequestParam(value = "producer", required = false) String producer, Model model) {
         if (StringUtils.isEmpty(name) && StringUtils.isEmpty(producer)) {
-            model.addAttribute("games", gameFacade.getGames());
+            model.addAttribute("games", gameService.getGames());
         } else {
-            model.addAttribute("games", gameFacade.getGames(name, producer));
+            model.addAttribute("games", gameService.getGames(name, producer));
         }
         return "listing";
     }

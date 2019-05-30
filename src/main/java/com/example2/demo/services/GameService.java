@@ -5,7 +5,6 @@ import com.example2.demo.converters.GameEntityToGameDataConverter;
 import com.example2.demo.dao.GameRepository;
 import com.example2.demo.data.GameData;
 import com.example2.demo.model.GameEntity;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -22,7 +21,6 @@ public class GameService {
     private GameEntityToGameDataConverter gameEntityToGameDataConverter;
     private GameRepository gameRepository;
 
-    @Autowired
     public GameService(GameDataToGameEntityConverter gameDataToGameEntityConverter, GameEntityToGameDataConverter gameEntityToGameDataConverter,
                        GameRepository gameRepository) {
         this.gameDataToGameEntityConverter = gameDataToGameEntityConverter;
