@@ -14,12 +14,20 @@
             <td><form:input path="type"/></td>
         </tr>
         <tr>
-            <td><form:label path="producer">Producent</form:label></td>
-            <td><form:input path="producer"/></td>
+            <td><form:label path="producerName">Producent</form:label></td>
+            <td><form:input path="producerName"/></td>
         </tr>
         <tr>
             <td><form:label path="distributionPath">Sposób dystrybucji</form:label></td>
             <td><form:input path="distributionPath"/></td>
+        </tr>
+        <tr>
+            <td><form:label path="price">Cena</form:label></td>
+            <td><form:input path="price"/></td>
+        </tr>
+        <tr>
+            <td><form:label path="currency">Waluta</form:label></td>
+            <td><form:input path="currency"/></td>
         </tr>
         <tr><td><input type="submit" value="Submit"/></td></tr>
     </table>

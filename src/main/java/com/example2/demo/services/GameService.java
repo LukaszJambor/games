@@ -3,6 +3,7 @@ package com.example2.demo.services;
 import com.example2.demo.converters.GameDataToGameEntityConverter;
 import com.example2.demo.converters.GameEntityToGameDataConverter;
 import com.example2.demo.dao.GameRepository;
+import com.example2.demo.dao.specifications.GameSpecification;
 import com.example2.demo.data.GameData;
 import com.example2.demo.model.GameEntity;
 import org.springframework.stereotype.Component;
@@ -20,12 +21,14 @@ public class GameService {
     private GameDataToGameEntityConverter gameDataToGameEntityConverter;
     private GameEntityToGameDataConverter gameEntityToGameDataConverter;
     private GameRepository gameRepository;
+    private GameSpecification gameSpecification;
 
     public GameService(GameDataToGameEntityConverter gameDataToGameEntityConverter, GameEntityToGameDataConverter gameEntityToGameDataConverter,
-                       GameRepository gameRepository) {
+                       GameRepository gameRepository, GameSpecification gameSpecification) {
         this.gameDataToGameEntityConverter = gameDataToGameEntityConverter;
         this.gameEntityToGameDataConverter = gameEntityToGameDataConverter;
         this.gameRepository = gameRepository;
+        this.gameSpecification = gameSpecification;
     }
 
     public void addGame(GameData gameData) {
@@ -39,7 +42,7 @@ public class GameService {
     }
 
     public List<GameData> getGames(String name, String producer) {
-        List<GameEntity> gameByNameOrProducer = gameRepository.findGameByNameOrProducer(name, producer);
+        List<GameEntity> gameByNameOrProducer = gameRepository.findAll(gameSpecification.findGameEntityByNameOrProducerName(name, producer));
         return convertToData(gameByNameOrProducer);
     }
 

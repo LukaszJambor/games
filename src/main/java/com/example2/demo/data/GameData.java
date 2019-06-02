@@ -1,6 +1,9 @@
 package com.example2.demo.data;
 
+import com.example2.demo.model.Currency;
 import com.example2.demo.model.DistributionPath;
+
+import java.math.BigDecimal;
 
 /**
  * Created by USER on 25.05.2019.
@@ -10,8 +13,10 @@ public class GameData {
     private Long id;
     private String name;
     private String type;
-    private String producer;
+    private String producerName;
     private DistributionPath distributionPath;
+    private BigDecimal price;
+    private Currency currency;
 
     public Long getId() {
         return id;
@@ -37,12 +42,12 @@ public class GameData {
         this.type = type;
     }
 
-    public String getProducer() {
-        return producer;
+    public String getProducerName() {
+        return producerName;
     }
 
-    public void setProducer(String producer) {
-        this.producer = producer;
+    public void setProducerName(String producerName) {
+        this.producerName = producerName;
     }
 
     public DistributionPath getDistributionPath() {
@@ -51,5 +56,21 @@ public class GameData {
 
     public void setDistributionPath(DistributionPath distributionPath) {
         this.distributionPath = distributionPath;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    public Currency getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(Currency currency) {
+        this.currency = currency;
     }
 }

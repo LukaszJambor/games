@@ -15,8 +15,12 @@ public class GameEntityToGameDataConverter {
         gameData.setId(gameEntity.getId());
         gameData.setName(gameEntity.getName());
         gameData.setType(gameEntity.getType());
-        gameData.setProducer(gameEntity.getProducer());
+        gameData.setProducerName(gameEntity.getProducerEntity().getProducerName());
         gameData.setDistributionPath(gameEntity.getDistributionPath());
+        if (gameEntity.getPriceEntity()!=null) {
+            gameData.setPrice(gameEntity.getPriceEntity().getPrice());
+            gameData.setCurrency(gameEntity.getPriceEntity().getCurrency());
+        }
         return gameData;
     }
 }

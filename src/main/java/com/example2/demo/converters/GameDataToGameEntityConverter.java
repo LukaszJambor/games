@@ -11,13 +11,22 @@ import org.springframework.stereotype.Component;
 @Component
 public class GameDataToGameEntityConverter {
 
+    private GameDataToProducerEntityConverter gameDataToProducerEntityConverter;
+    private GameDataToPriceEntityConverter gameDataToPriceEntityConverter;
+
+    public GameDataToGameEntityConverter(GameDataToProducerEntityConverter gameDataToProducerEntityConverter, GameDataToPriceEntityConverter gameDataToPriceEntityConverter) {
+        this.gameDataToPriceEntityConverter = gameDataToPriceEntityConverter;
+        this.gameDataToProducerEntityConverter = gameDataToProducerEntityConverter;
+    }
+
     public GameEntity covert(GameData gameData) {
         GameEntity gameEntity = new GameEntity();
         gameEntity.setId(gameData.getId());
         gameEntity.setName(gameData.getName());
         gameEntity.setType(gameData.getType());
-        gameEntity.setProducer(gameData.getProducer());
+        gameEntity.setProducerEntity(gameDataToProducerEntityConverter.convert(gameData));
         gameEntity.setDistributionPath(gameData.getDistributionPath());
+        gameEntity.setPriceEntity(gameDataToPriceEntityConverter.convert(gameData));
         return gameEntity;
     }
 }

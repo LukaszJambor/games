@@ -1,8 +1,6 @@
 package com.example2.demo.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 /**
  * Created by USER on 25.05.2019.
@@ -19,9 +17,14 @@ public class GameEntity {
 
     private String type;
 
-    private String producer;
-
+    @Enumerated(EnumType.STRING)
     private DistributionPath distributionPath;
+
+    @Embedded
+    private ProducerEntity producerEntity;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private PriceEntity priceEntity;
 
     public Long getId() {
         return id;
@@ -47,19 +50,27 @@ public class GameEntity {
         this.type = type;
     }
 
-    public String getProducer() {
-        return producer;
-    }
-
-    public void setProducer(String producer) {
-        this.producer = producer;
-    }
-
     public DistributionPath getDistributionPath() {
         return distributionPath;
     }
 
     public void setDistributionPath(DistributionPath distributionPath) {
         this.distributionPath = distributionPath;
+    }
+
+    public ProducerEntity getProducerEntity() {
+        return producerEntity;
+    }
+
+    public void setProducerEntity(ProducerEntity producerEntity) {
+        this.producerEntity = producerEntity;
+    }
+
+    public PriceEntity getPriceEntity() {
+        return priceEntity;
+    }
+
+    public void setPriceEntity(PriceEntity priceEntity) {
+        this.priceEntity = priceEntity;
     }
 }

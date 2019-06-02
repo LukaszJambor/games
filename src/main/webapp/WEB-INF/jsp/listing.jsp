@@ -9,8 +9,10 @@
         <td>${game.id}</td>
         <td>${game.name}</td>
         <td>${game.type}</td>
-        <td>${game.producer}</td>
+        <td>${game.producerName}</td>
         <td>${game.distributionPath}</td>
+        <td>${game.price}</td>
+        <td>${game.currency}</td>
     </tr>
 </c:forEach>
 </table>
