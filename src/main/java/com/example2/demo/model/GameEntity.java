@@ -20,10 +20,11 @@ public class GameEntity {
     @Enumerated(EnumType.STRING)
     private DistributionPath distributionPath;
 
-    @Embedded
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name="producer_key")
     private ProducerEntity producerEntity;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @Embedded
     private PriceEntity priceEntity;
 
     public Long getId() {

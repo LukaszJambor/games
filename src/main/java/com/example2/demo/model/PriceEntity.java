@@ -1,30 +1,21 @@
 package com.example2.demo.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.Embeddable;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import java.math.BigDecimal;
 
 /**
  * Created by USER on 01.06.2019.
  */
 
-@Entity
+@Embeddable
 public class PriceEntity {
 
-    @GeneratedValue
-    @Id
-    private Long id;
     private BigDecimal price;
+
+    @Enumerated(EnumType.STRING)
     private Currency currency;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public BigDecimal getPrice() {
         return price;
