@@ -1,7 +1,7 @@
 package com.example2.demo.services;
 
-import com.example2.demo.converters.GameDataToGameEntityConverter;
-import com.example2.demo.converters.GameEntityToGameDataConverter;
+import com.example2.demo.converters.GameDataGameEntityMapper;
+import com.example2.demo.converters.GameEntityGameDataMapper;
 import com.example2.demo.dao.GameRepository;
 import com.example2.demo.dao.specifications.GameSpecification;
 import com.example2.demo.data.GameData;
@@ -18,21 +18,21 @@ import java.util.stream.Collectors;
 @Component
 public class GameService {
 
-    private GameDataToGameEntityConverter gameDataToGameEntityConverter;
-    private GameEntityToGameDataConverter gameEntityToGameDataConverter;
+    private GameDataGameEntityMapper gameDataGameEntityMapper;
+    private GameEntityGameDataMapper gameEntityGameDataMapper;
     private GameRepository gameRepository;
     private GameSpecification gameSpecification;
 
-    public GameService(GameDataToGameEntityConverter gameDataToGameEntityConverter, GameEntityToGameDataConverter gameEntityToGameDataConverter,
+    public GameService(GameDataGameEntityMapper gameDataGameEntityMapper, GameEntityGameDataMapper gameEntityGameDataMapper,
                        GameRepository gameRepository, GameSpecification gameSpecification) {
-        this.gameDataToGameEntityConverter = gameDataToGameEntityConverter;
-        this.gameEntityToGameDataConverter = gameEntityToGameDataConverter;
+        this.gameDataGameEntityMapper = gameDataGameEntityMapper;
+        this.gameEntityGameDataMapper = gameEntityGameDataMapper;
         this.gameRepository = gameRepository;
         this.gameSpecification = gameSpecification;
     }
 
     public void addGame(GameData gameData) {
-        GameEntity gameEntity = gameDataToGameEntityConverter.covert(gameData);
+        GameEntity gameEntity = gameDataGameEntityMapper.convert(gameData);
         gameRepository.save(gameEntity);
     }
 
@@ -48,7 +48,7 @@ public class GameService {
 
     private List<GameData> convertToData(List<GameEntity> all) {
         return all.stream()
-                .map(game -> gameEntityToGameDataConverter.convert(game))
+                .map(game -> gameEntityGameDataMapper.convert(game))
                 .collect(Collectors.toList());
     }
 }

@@ -1,25 +1,15 @@
 package com.example2.demo.data;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Created by USER on 27.05.2019.
  */
+
+@Setter
+@Getter
 public class QueryData {
     private String name;
     private String producer;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getProducer() {
-        return producer;
-    }
-
-    public void setProducer(String producer) {
-        this.producer = producer;
-    }
 }
