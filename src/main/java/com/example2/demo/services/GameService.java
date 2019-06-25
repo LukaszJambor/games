@@ -1,6 +1,5 @@
 package com.example2.demo.services;
 
-import com.example2.demo.converters.GameDataGameEntityMapper;
 import com.example2.demo.converters.GameEntityGameDataMapper;
 import com.example2.demo.dao.GameRepository;
 import com.example2.demo.dao.specifications.GameSpecification;
@@ -18,21 +17,19 @@ import java.util.stream.Collectors;
 @Component
 public class GameService {
 
-    private GameDataGameEntityMapper gameDataGameEntityMapper;
     private GameEntityGameDataMapper gameEntityGameDataMapper;
     private GameRepository gameRepository;
     private GameSpecification gameSpecification;
 
-    public GameService(GameDataGameEntityMapper gameDataGameEntityMapper, GameEntityGameDataMapper gameEntityGameDataMapper,
+    public GameService(GameEntityGameDataMapper gameEntityGameDataMapper,
                        GameRepository gameRepository, GameSpecification gameSpecification) {
-        this.gameDataGameEntityMapper = gameDataGameEntityMapper;
         this.gameEntityGameDataMapper = gameEntityGameDataMapper;
         this.gameRepository = gameRepository;
         this.gameSpecification = gameSpecification;
     }
 
     public void addGame(GameData gameData) {
-        GameEntity gameEntity = gameDataGameEntityMapper.convert(gameData);
+        GameEntity gameEntity = gameEntityGameDataMapper.toEntity(gameData);
         gameRepository.save(gameEntity);
     }
 
@@ -48,7 +45,7 @@ public class GameService {
 
     private List<GameData> convertToData(List<GameEntity> all) {
         return all.stream()
-                .map(game -> gameEntityGameDataMapper.convert(game))
+                .map(game -> gameEntityGameDataMapper.toDto(game))
                 .collect(Collectors.toList());
     }
 }

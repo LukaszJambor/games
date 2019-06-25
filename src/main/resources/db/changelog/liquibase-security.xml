@@ -1,0 +1,41 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+    <changeSet author="lukasz" id="1">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="user_entity"/>
+            </not>
+        </preConditions>
+        <createTable tableName="user_entity">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="login" type="VARCHAR(255)"/>
+            <column name="password" type="VARCHAR(255)"/>
+            <column name="active" type="BOOLEAN"/>
+        </createTable>
+        <createTable tableName="role_entity">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="role" type="VARCHAR(255)"/>
+            <column name="user_key" type="BIGINT"/>
+        </createTable>
+        <createTable tableName="activation_entity">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="hash" type="VARCHAR(255)"/>
+            <column name="activation_type" type="VARCHAR(255)"/>
+            <column name="activation_timestamp" type="DATETIME"/>
+            <column name="user_key" type="BIGINT"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="role_entity" baseColumnNames="user_key" constraintName="user_entity_u"
+                                 referencedTableName="user_entity" referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="activation_entity" baseColumnNames="user_key" constraintName="activation_entity_a"
+                                 referencedTableName="user_entity" referencedColumnNames="id"/>
+    </changeSet>
+</databaseChangeLog>

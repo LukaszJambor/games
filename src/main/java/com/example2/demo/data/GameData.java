@@ -1,7 +1,7 @@
 package com.example2.demo.data;
 
-import com.example2.demo.model.Currency;
-import com.example2.demo.model.DistributionPath;
+import com.example2.demo.model.enums.Currency;
+import com.example2.demo.model.enums.DistributionPath;
 import lombok.Getter;
 import lombok.Setter;
 

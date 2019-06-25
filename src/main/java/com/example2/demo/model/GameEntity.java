@@ -1,5 +1,6 @@
 package com.example2.demo.model;
 
+import com.example2.demo.model.enums.DistributionPath;
 import lombok.Getter;
 import lombok.Setter;
 
