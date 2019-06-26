@@ -5,7 +5,7 @@ import com.example2.demo.converters.UserEntityUserDataMapper;
 import com.example2.demo.dao.HashRepository;
 import com.example2.demo.dao.UserRepository;
 import com.example2.demo.data.UserData;
-import com.example2.demo.model.ActivationEntity;
+import com.example2.demo.model.UserTokenEntity;
 import com.example2.demo.model.RoleEntity;
 import com.example2.demo.model.UserEntity;
 import com.example2.demo.model.enums.ActivationType;
@@ -55,6 +55,7 @@ public class UserService implements UserDetailsService {
         return new User(userEntityByLogin.getLogin(), userEntityByLogin.getPassword(), userEntityByLogin.isActive(), true, true, true, role);
     }
 
+    @Transactional
     public void addUser(UserData userData) {
         UserEntity userEntity = userEntityUserDataMapper.toEntity(userData);
         setRole(userEntity);
@@ -66,30 +67,30 @@ public class UserService implements UserDetailsService {
     }
 
     public void confirmAccount(String hash) throws ActivationException {
-        ActivationEntity activationEntityByHash = hashRepository.findActivationEntityByHash(hash);
-        if (activationEntityByHash == null) {
+        UserTokenEntity userTokenEntityByHash = hashRepository.findActivationEntityByHashAndActivationTimestampIsNull(hash);
+        if (userTokenEntityByHash == null) {
             throw new ActivationException("token not found");
         }
-        activationEntityByHash.setActivationTimestamp(LocalDateTime.now());
-        UserEntity userEntity = activationEntityByHash.getUserEntity();
+        userTokenEntityByHash.setActivationTimestamp(LocalDateTime.now());
+        UserEntity userEntity = userTokenEntityByHash.getUserEntity();
         userEntity.setActive(Boolean.TRUE);
-        hashRepository.save(activationEntityByHash);
+        hashRepository.save(userTokenEntityByHash);
     }
 
     private void addToQueue(UserEntity userEntity) {
         Map<String, String> map = new HashMap<>();
         map.put("email", userEntity.getLogin());
-        map.put("hash", userEntity.getActivationEntityList().get(0).getHash());
+        map.put("hash", userEntity.getUserTokenEntityList().get(userEntity.getUserTokenEntityList().size()-1).getHash());
         registrationEmailSender.send(map);
     }
 
     private void setToken(UserEntity userEntity) {
-        ActivationEntity activationEntity = new ActivationEntity();
-        activationEntity.setHash(UUID.randomUUID().toString());
-        activationEntity.setActivationType(ActivationType.EMAIL);
-        List<ActivationEntity> activationEntityList = new ArrayList<>();
-        activationEntityList.add(activationEntity);
-        userEntity.setActivationEntityList(activationEntityList);
+        UserTokenEntity userTokenEntity = new UserTokenEntity();
+        userTokenEntity.setHash(UUID.randomUUID().toString());
+        userTokenEntity.setActivationType(ActivationType.EMAIL);
+        List<UserTokenEntity> userTokenEntityList = new ArrayList<>();
+        userTokenEntityList.add(userTokenEntity);
+        userEntity.setUserTokenEntityList(userTokenEntityList);
     }
 
     private void setRole(UserEntity userEntity) {

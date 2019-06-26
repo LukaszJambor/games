@@ -24,7 +24,7 @@
             <column name="role" type="VARCHAR(255)"/>
             <column name="user_key" type="BIGINT"/>
         </createTable>
-        <createTable tableName="activation_entity">
+        <createTable tableName="user_token_entity">
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true"/>
             </column>
@@ -35,7 +35,7 @@
         </createTable>
         <addForeignKeyConstraint baseTableName="role_entity" baseColumnNames="user_key" constraintName="user_entity_u"
                                  referencedTableName="user_entity" referencedColumnNames="id"/>
-        <addForeignKeyConstraint baseTableName="activation_entity" baseColumnNames="user_key" constraintName="activation_entity_a"
+        <addForeignKeyConstraint baseTableName="user_token_entity" baseColumnNames="user_key" constraintName="activation_entity_a"
                                  referencedTableName="user_entity" referencedColumnNames="id"/>
     </changeSet>
 </databaseChangeLog>

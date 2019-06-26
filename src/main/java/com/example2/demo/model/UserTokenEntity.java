@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Setter
 @Getter
 @Entity
-public class ActivationEntity {
+public class UserTokenEntity {
 
     @GeneratedValue
     @Id
