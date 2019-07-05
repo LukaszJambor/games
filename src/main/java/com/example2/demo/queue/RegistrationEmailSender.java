@@ -1,4 +1,4 @@
-package com.example2.demo.Queue;
+package com.example2.demo.queue;
 
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;

@@ -16,6 +16,13 @@
         </tr>
         <tr>
             <td>
+                <c:if test="${not empty userExist}">
+                    <p1>${userExist}<p1>
+                </c:if>
+            </td>
+        </tr>
+        <tr>
+            <td>
                 <form:label path="password">Password</form:label>
             </td>
             <td>

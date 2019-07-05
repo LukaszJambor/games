@@ -1,4 +1,4 @@
-package com.example2.demo.Queue;
+package com.example2.demo.queue;
 
 import com.example2.demo.services.EmailSenderService;
 import org.springframework.jms.annotation.JmsListener;

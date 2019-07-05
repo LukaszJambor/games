@@ -1,10 +1,11 @@
 package com.example2.demo.services;
 
-import com.example2.demo.Queue.RegistrationEmailSender;
+import com.example2.demo.queue.RegistrationEmailSender;
 import com.example2.demo.converters.UserEntityUserDataMapper;
 import com.example2.demo.dao.HashRepository;
 import com.example2.demo.dao.UserRepository;
 import com.example2.demo.data.UserData;
+import com.example2.demo.exception.UserFoundException;
 import com.example2.demo.model.UserTokenEntity;
 import com.example2.demo.model.RoleEntity;
 import com.example2.demo.model.UserEntity;
@@ -57,6 +58,9 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public void addUser(UserData userData) {
+        if (userRepository.findUserEntityByLogin(userData.getLogin()) != null) {
+            throw new UserFoundException();
+        }
         UserEntity userEntity = userEntityUserDataMapper.toEntity(userData);
         setRole(userEntity);
         setToken(userEntity);
@@ -80,7 +84,7 @@ public class UserService implements UserDetailsService {
     private void addToQueue(UserEntity userEntity) {
         Map<String, String> map = new HashMap<>();
         map.put("email", userEntity.getLogin());
-        map.put("hash", userEntity.getUserTokenEntityList().get(userEntity.getUserTokenEntityList().size()-1).getHash());
+        map.put("hash", userEntity.getUserTokenEntityList().get(userEntity.getUserTokenEntityList().size() - 1).getHash());
         registrationEmailSender.send(map);
     }
 
@@ -88,6 +92,7 @@ public class UserService implements UserDetailsService {
         UserTokenEntity userTokenEntity = new UserTokenEntity();
         userTokenEntity.setHash(UUID.randomUUID().toString());
         userTokenEntity.setActivationType(ActivationType.EMAIL);
+        userTokenEntity.setCreationTimestamp(LocalDateTime.now());
         List<UserTokenEntity> userTokenEntityList = new ArrayList<>();
         userTokenEntityList.add(userTokenEntity);
         userEntity.setUserTokenEntityList(userTokenEntityList);
