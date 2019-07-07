@@ -22,4 +22,5 @@ public class GameData {
     private DistributionPath distributionPath;
     private BigDecimal price;
     private Currency currency;
+    private int quantity;
 }

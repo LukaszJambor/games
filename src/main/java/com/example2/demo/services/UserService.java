@@ -1,16 +1,17 @@
 package com.example2.demo.services;
 
-import com.example2.demo.queue.RegistrationEmailSender;
 import com.example2.demo.converters.UserEntityUserDataMapper;
 import com.example2.demo.dao.HashRepository;
 import com.example2.demo.dao.UserRepository;
 import com.example2.demo.data.UserData;
 import com.example2.demo.exception.UserFoundException;
-import com.example2.demo.model.UserTokenEntity;
 import com.example2.demo.model.RoleEntity;
 import com.example2.demo.model.UserEntity;
+import com.example2.demo.model.UserTokenEntity;
 import com.example2.demo.model.enums.ActivationType;
 import com.example2.demo.model.enums.Role;
+import com.example2.demo.queue.RegistrationEmailSender;
+import com.example2.demo.util.SecurityUtil;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -56,7 +57,7 @@ public class UserService implements UserDetailsService {
         return new User(userEntityByLogin.getLogin(), userEntityByLogin.getPassword(), userEntityByLogin.isActive(), true, true, true, role);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public void addUser(UserData userData) {
         if (userRepository.findUserEntityByLogin(userData.getLogin()) != null) {
             throw new UserFoundException();
@@ -79,6 +80,15 @@ public class UserService implements UserDetailsService {
         UserEntity userEntity = userTokenEntityByHash.getUserEntity();
         userEntity.setActive(Boolean.TRUE);
         hashRepository.save(userTokenEntityByHash);
+    }
+
+    public Long getLoggedUserId() {
+        String userName = SecurityUtil.getUserName();
+        UserEntity userEntityByLogin = userRepository.findUserEntityByLogin(userName);
+        if (userEntityByLogin != null) {
+            return userEntityByLogin.getId();
+        }
+        return null;
     }
 
     private void addToQueue(UserEntity userEntity) {

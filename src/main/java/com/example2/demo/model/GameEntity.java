@@ -32,4 +32,6 @@ public class GameEntity {
 
     @Embedded
     private PriceEntity priceEntity;
+
+    private int quantity;
 }

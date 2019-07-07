@@ -3,6 +3,7 @@ package com.example2.demo.controllers;
 import com.example2.demo.data.GameData;
 import com.example2.demo.data.QueryData;
 import com.example2.demo.services.GameService;
+import com.example2.demo.services.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -18,9 +19,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class GameController {
 
     private GameService gameService;
+    private UserService userService;
 
-    public GameController(GameService gameService) {
+    public GameController(GameService gameService, UserService userService) {
         this.gameService = gameService;
+        this.userService = userService;
     }
 
     @RequestMapping(value = "/addGame", method = RequestMethod.GET)
@@ -42,6 +45,7 @@ public class GameController {
         } else {
             model.addAttribute("games", gameService.getGames(name, producer));
         }
+        model.addAttribute("userId", userService.getLoggedUserId());
         return "listing";
     }
 

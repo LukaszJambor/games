@@ -29,6 +29,10 @@
             <td><form:label path="currency">Waluta</form:label></td>
             <td><form:input path="currency"/></td>
         </tr>
+        <tr>
+            <td><form:label path="quantity">Ilość</form:label></td>
+            <td><form:input path="quantity"/></td>
+        </tr>
         <tr><td><input type="submit" value="Submit"/></td></tr>
     </table>
 </form:form>

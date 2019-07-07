@@ -13,6 +13,10 @@
         <td>${game.distributionPath}</td>
         <td>${game.price}</td>
         <td>${game.currency}</td>
+        <td>${game.quantity}</td>
+        <c:if test="${not empty userId}">
+            <td><a href="<c:url value="/user/${userId}/lend/${game.id}"/>">Pożycz</a></td>
+        </c:if>
     </tr>
 </c:forEach>
 </table>

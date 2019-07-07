@@ -1,0 +1,24 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+    <changeSet author="lukasz" id="3">
+        <addColumn tableName="game_entity">
+            <column name="quantity" type="INT"/>
+        </addColumn>
+        <createTable tableName="lend_entity">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="user_id" type="BIGINT"/>
+            <column name="game_id" type="BIGINT"/>
+            <column name="lend_start_date" type="DATETIME"/>
+            <column name="lend_end_date" type="DATETIME"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="lend_entity" baseColumnNames="user_id" constraintName="lend_entity_u"
+                                 referencedTableName="user_entity" referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="lend_entity" baseColumnNames="game_id" constraintName="user_entity_g"
+                                 referencedTableName="game_entity" referencedColumnNames="id"/>
+    </changeSet>
+</databaseChangeLog>

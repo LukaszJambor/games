@@ -34,7 +34,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .failureUrl("/fail")
                 .and()
                 .authorizeRequests()
-                .antMatchers("/success").authenticated();
+                .antMatchers("/success").authenticated()
+                .antMatchers("/user/**/games").authenticated();
     }
 
     @Bean

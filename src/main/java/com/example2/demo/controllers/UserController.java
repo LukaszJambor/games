@@ -2,6 +2,7 @@ package com.example2.demo.controllers;
 
 import com.example2.demo.data.UserData;
 import com.example2.demo.model.UserEntity;
+import com.example2.demo.services.GameService;
 import com.example2.demo.services.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,9 +19,11 @@ import java.rmi.activation.ActivationException;
 public class UserController {
 
     private UserService userService;
+    private GameService gameService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, GameService gameService) {
         this.userService = userService;
+        this.gameService = gameService;
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
@@ -63,5 +66,24 @@ public class UserController {
             return "fail";
         }
         return "confirmationSuccessfull";
+    }
+
+    @RequestMapping(value = "/user/{userId}/games", method = RequestMethod.GET)
+    public String lendGames(@PathVariable("userId") Long userId, Model model) {
+        model.addAttribute("games", gameService.getUserGamePanel(userId));
+        model.addAttribute("userId", userId);
+        return "userLendGames";
+    }
+
+    @RequestMapping(value = "/user/{userId}/lend/{gameId}", method = RequestMethod.GET)
+    public String createLend(@PathVariable("userId") Long userId, @PathVariable("gameId") Long gameId) {
+        gameService.createLend(userId, gameId);
+        return "redirect:/user/" + userId + "/games";
+    }
+
+    @RequestMapping(value = "/user/{userId}/return/{gameId}", method = RequestMethod.GET)
+    public String createReturn(@PathVariable("userId") Long userId, @PathVariable("gameId") Long gameId) {
+        gameService.createReturn(userId, gameId);
+        return "redirect:/user/" + userId + "/games";
     }
 }
