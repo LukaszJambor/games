@@ -1,7 +1,6 @@
 package com.example2.demo.controllers;
 
 import com.example2.demo.data.UserData;
-import com.example2.demo.exception.UserFoundException;
 import com.example2.demo.model.UserEntity;
 import com.example2.demo.services.UserService;
 import org.springframework.stereotype.Controller;
@@ -52,13 +51,7 @@ public class UserController {
             model.addAttribute("error", result.getAllErrors());
             return "/register";
         }
-        try {
-            userService.addUser(userData);
-        } catch (UserFoundException e) {
-            System.out.println(e);
-            model.addAttribute("userExist", "User Exists");
-            return "/register";
-        }
+        userService.addUser(userData);
         return "redirect:/";
     }
 

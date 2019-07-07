@@ -84,7 +84,7 @@ public class UserService implements UserDetailsService {
     private void addToQueue(UserEntity userEntity) {
         Map<String, String> map = new HashMap<>();
         map.put("email", userEntity.getLogin());
-        map.put("hash", userEntity.getUserTokenEntityList().get(userEntity.getUserTokenEntityList().size() - 1).getHash());
+        map.put("hash", userEntity.getLastHash());
         registrationEmailSender.send(map);
     }
 
@@ -92,7 +92,6 @@ public class UserService implements UserDetailsService {
         UserTokenEntity userTokenEntity = new UserTokenEntity();
         userTokenEntity.setHash(UUID.randomUUID().toString());
         userTokenEntity.setActivationType(ActivationType.EMAIL);
-        userTokenEntity.setCreationTimestamp(LocalDateTime.now());
         List<UserTokenEntity> userTokenEntityList = new ArrayList<>();
         userTokenEntityList.add(userTokenEntity);
         userEntity.setUserTokenEntityList(userTokenEntityList);

@@ -3,6 +3,7 @@ package com.example2.demo.model;
 import com.example2.demo.model.enums.ActivationType;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -23,6 +24,7 @@ public class UserTokenEntity {
 
     private LocalDateTime activationTimestamp;
 
+    @CreationTimestamp
     private LocalDateTime creationTimestamp;
 
     @ManyToOne(cascade = CascadeType.ALL)

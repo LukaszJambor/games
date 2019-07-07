@@ -50,7 +50,6 @@ public class DeleteOldTokensConfiguration {
 
         SimpleTriggerFactoryBean factoryBean = new SimpleTriggerFactoryBean();
         factoryBean.setJobDetail(jobDetail);
-        factoryBean.setStartDelay(0L);
         factoryBean.setRepeatInterval(frequency);
         factoryBean.setRepeatCount(SimpleTrigger.REPEAT_INDEFINITELY);
         return factoryBean;
