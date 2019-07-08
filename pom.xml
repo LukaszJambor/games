@@ -33,7 +33,7 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>mysql</groupId>
+                <groupId>mysqlgroupIdId>
                 <artifactId>mysql-connector-java</artifactId>
                 <version>${mysql.connector.version}</version>
             </dependency>

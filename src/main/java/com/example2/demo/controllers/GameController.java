@@ -39,11 +39,19 @@ public class GameController {
     }
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public String showGames(@RequestParam(value = "name", required = false) String name, @RequestParam(value = "producer", required = false) String producer, Model model) {
+    public String showGames(@RequestParam(value = "name", required = false) String name, @RequestParam(value = "producer", required = false) String producer,
+                            @RequestParam(value = "available", required = false) boolean available, @RequestParam(value = "doubleLend", required = false) boolean doubleLend,
+                            Model model) {
         if (StringUtils.isEmpty(name) && StringUtils.isEmpty(producer)) {
             model.addAttribute("games", gameService.getGames());
         } else {
             model.addAttribute("games", gameService.getGames(name, producer));
+        }
+        if (available) {
+            model.addAttribute("notAvailable", "game is not available");
+        }
+        if (doubleLend) {
+            model.addAttribute("doubleLend", "you cant lend twice same game");
         }
         model.addAttribute("userId", userService.getLoggedUserId());
         return "listing";

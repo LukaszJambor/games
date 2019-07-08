@@ -57,18 +57,27 @@ public class UserService implements UserDetailsService {
         return new User(userEntityByLogin.getLogin(), userEntityByLogin.getPassword(), userEntityByLogin.isActive(), true, true, true, role);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public void addUser(UserData userData) {
-        if (userRepository.findUserEntityByLogin(userData.getLogin()) != null) {
+        UserEntity userEntityByLogin = userRepository.findUserEntityByLogin(userData.getLogin());
+
+        if (userEntityByLogin != null && userEntityByLogin.isActive()) {
             throw new UserFoundException();
         }
-        UserEntity userEntity = userEntityUserDataMapper.toEntity(userData);
-        setRole(userEntity);
-        setToken(userEntity);
-        userEntity.setPassword(bCryptPasswordEncoder.encode(userEntity.getPassword()));
-        userEntity.setActive(Boolean.FALSE);
-        userRepository.save(userEntity);
-        addToQueue(userEntity);
+        if (userEntityByLogin != null && !userEntityByLogin.isActive() && !userEntityByLogin.isActivationHashAvailable(ActivationType.EMAIL)) {
+            setToken(userEntityByLogin);
+            userRepository.save(userEntityByLogin);
+            addToQueue(userEntityByLogin);
+        }
+        if (userEntityByLogin == null) {
+            UserEntity userEntity = userEntityUserDataMapper.toEntity(userData);
+            setRole(userEntity);
+            setToken(userEntity);
+            userEntity.setPassword(bCryptPasswordEncoder.encode(userEntity.getPassword()));
+            userEntity.setActive(Boolean.FALSE);
+            userRepository.save(userEntity);
+            addToQueue(userEntity);
+        }
     }
 
     public void confirmAccount(String hash) throws ActivationException {
@@ -94,7 +103,7 @@ public class UserService implements UserDetailsService {
     private void addToQueue(UserEntity userEntity) {
         Map<String, String> map = new HashMap<>();
         map.put("email", userEntity.getLogin());
-        map.put("hash", userEntity.getLastHash());
+        map.put("hash", userEntity.getLastHash(ActivationType.EMAIL));
         registrationEmailSender.send(map);
     }
 

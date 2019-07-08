@@ -8,10 +8,12 @@ import com.example2.demo.dao.UserRepository;
 import com.example2.demo.dao.specifications.GameSpecification;
 import com.example2.demo.data.GameData;
 import com.example2.demo.data.LendData;
+import com.example2.demo.exception.NotEnoughCopiesException;
 import com.example2.demo.model.GameEntity;
 import com.example2.demo.model.LendEntity;
 import com.example2.demo.model.UserEntity;
 import com.example2.demo.util.SecurityUtil;
+import com.mchange.util.DuplicateElementException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -85,18 +87,22 @@ public class GameService {
         if (!SecurityUtil.getUserName().equals(userEntity.getLogin())) {
             throw new AccessDeniedException("request userId is different than in session");
         }
+        LendEntity lendEntity = lendRepository.findByUserEntityIdAndGameEntityIdAndLendEndDateIsNull(userId, gameId);
+        if (lendEntity != null) {
+            throw new DuplicateElementException("impossible to lend same game twice");
+        }
         Optional<GameEntity> gameEntityById = gameRepository.findById(gameId);
         if (gameEntityById.isPresent() && gameEntityById.get().getQuantity() > 0) {
             GameEntity gameEntity = gameEntityById.get();
             createLend(userEntity, gameEntity);
             updateQuantity(gameEntity);
         } else {
-            //throw something
+            throw new NotEnoughCopiesException("impossible to lend unavailable game");
         }
     }
 
     private void updateQuantity(GameEntity gameEntity) {
-        gameEntity.setQuantity(gameEntity.getQuantity()-1);
+        gameEntity.setQuantity(gameEntity.getQuantity() - 1);
         gameRepository.save(gameEntity);
     }
 
@@ -121,7 +127,7 @@ public class GameService {
 
     private void updateStockAfterReturn(LendEntity lendEntity) {
         GameEntity gameEntity = lendEntity.getGameEntity();
-        gameEntity.setQuantity(gameEntity.getQuantity()+1);
+        gameEntity.setQuantity(gameEntity.getQuantity() + 1);
         gameRepository.save(gameEntity);
     }
 
