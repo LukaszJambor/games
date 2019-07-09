@@ -1,13 +1,13 @@
 package com.example2.demo.controllers.advice;
 
 import com.example2.demo.data.UserData;
+import com.example2.demo.exception.DuplicatedLendException;
 import com.example2.demo.exception.NotEnoughCopiesException;
 import com.example2.demo.exception.UserFoundException;
-import com.mchange.util.DuplicateElementException;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @ControllerAdvice
 public class UserControllerAdvice {
@@ -22,12 +22,14 @@ public class UserControllerAdvice {
     }
 
     @ExceptionHandler(value = NotEnoughCopiesException.class)
-    public String informationAboutEmptyStock(Model model) {
-        return "redirect:/?available=false";
+    public String informationAboutEmptyStock(RedirectAttributes redirectAttrs) {
+        redirectAttrs.addFlashAttribute("notAvailable", "copy currently unavailable");
+        return "redirect:/";
     }
 
-    @ExceptionHandler(value = DuplicateElementException.class)
-    public String informationAboutLendGame(Model model) {
-        return "redirect:/?doubleLend=true";
+    @ExceptionHandler(value = DuplicatedLendException.class)
+    public String informationAboutLendGame(RedirectAttributes redirectAttrs) {
+        redirectAttrs.addFlashAttribute("doubleLend", "you cant lend twice same game");
+        return "redirect:/";
     }
 }

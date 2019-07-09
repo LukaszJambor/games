@@ -8,12 +8,12 @@ import com.example2.demo.dao.UserRepository;
 import com.example2.demo.dao.specifications.GameSpecification;
 import com.example2.demo.data.GameData;
 import com.example2.demo.data.LendData;
+import com.example2.demo.exception.DuplicatedLendException;
 import com.example2.demo.exception.NotEnoughCopiesException;
 import com.example2.demo.model.GameEntity;
 import com.example2.demo.model.LendEntity;
 import com.example2.demo.model.UserEntity;
 import com.example2.demo.util.SecurityUtil;
-import com.mchange.util.DuplicateElementException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -87,9 +87,9 @@ public class GameService {
         if (!SecurityUtil.getUserName().equals(userEntity.getLogin())) {
             throw new AccessDeniedException("request userId is different than in session");
         }
-        LendEntity lendEntity = lendRepository.findByUserEntityIdAndGameEntityIdAndLendEndDateIsNull(userId, gameId);
-        if (lendEntity != null) {
-            throw new DuplicateElementException("impossible to lend same game twice");
+        Optional<LendEntity> lendEntity = lendRepository.findByUserEntityIdAndGameEntityIdAndLendEndDateIsNull(userId, gameId);
+        if (lendEntity.isPresent()) {
+            throw new DuplicatedLendException("impossible to lend same game twice");
         }
         Optional<GameEntity> gameEntityById = gameRepository.findById(gameId);
         if (gameEntityById.isPresent() && gameEntityById.get().getQuantity() > 0) {
@@ -119,10 +119,11 @@ public class GameService {
         if (!SecurityUtil.getUserName().equals(userEntity.getLogin())) {
             throw new AccessDeniedException("request userId is different than in session");
         }
-        LendEntity lendEntity = lendRepository.findByUserEntityIdAndGameEntityIdAndLendEndDateIsNull(userId, gameId);
-        createReturn(lendEntity);
-        updateStockAfterReturn(lendEntity);
-
+        Optional<LendEntity> lendEntity = lendRepository.findByUserEntityIdAndGameEntityIdAndLendEndDateIsNull(userId, gameId);
+        if(lendEntity.isPresent()){
+            createReturn(lendEntity.get());
+            updateStockAfterReturn(lendEntity.get());
+        }
     }
 
     private void updateStockAfterReturn(LendEntity lendEntity) {

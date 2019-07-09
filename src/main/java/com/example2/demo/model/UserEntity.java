@@ -1,7 +1,6 @@
 package com.example2.demo.model;
 
 import com.example2.demo.model.enums.ActivationType;
-import com.google.common.collect.Iterables;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.logging.log4j.util.Strings;
@@ -37,12 +36,11 @@ public class UserEntity {
     private List<UserTokenEntity> userTokenEntityList;
 
     public String getLastHash(ActivationType activationType) {
-        if (CollectionUtils.isEmpty(userTokenEntityList)) {
-            return Strings.EMPTY;
-        } else {
-            return Iterables.getLast(getTokensWithSelectedType(activationType)).getHash();
+            return getTokensWithSelectedType(activationType).stream()
+                    .reduce((first, second) -> second)
+                    .map(UserTokenEntity::getHash)
+                    .orElse(Strings.EMPTY);
         }
-    }
 
     public boolean isActivationHashAvailable(ActivationType activationType) {
         return !CollectionUtils.isEmpty(getTokensWithSelectedType(activationType));
