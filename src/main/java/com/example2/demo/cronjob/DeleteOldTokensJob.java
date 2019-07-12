@@ -23,7 +23,7 @@ public class DeleteOldTokensJob implements Job {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        List<UserTokenEntity> activationEntityByCreationTimestampBefore = hashRepository.findActivationEntityByCreationTimestampBefore(LocalDateTime.now().minusHours(Long.valueOf(hours)));
+        List<UserTokenEntity> activationEntityByCreationTimestampBefore = hashRepository.findActivationEntityByCreationTimestampBeforeAndActivationTimestampIsNull(LocalDateTime.now().minusHours(Long.valueOf(hours)));
         hashRepository.deleteAll(activationEntityByCreationTimestampBefore);
     }
 }

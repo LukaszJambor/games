@@ -24,16 +24,16 @@ public class UserEntity {
 
     private String password;
 
-    private boolean active;
+    private Boolean active;
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_key")
-    private List<RoleEntity> roleEntityList;
+    private List<RoleEntity> roles;
 
     @Lazy
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_key")
-    private List<UserTokenEntity> userTokenEntityList;
+    private List<UserTokenEntity> userTokens;
 
     public String getLastHash(ActivationType activationType) {
             return getTokensWithSelectedType(activationType).stream()
@@ -47,7 +47,7 @@ public class UserEntity {
     }
 
     private List<UserTokenEntity> getTokensWithSelectedType(ActivationType activationType) {
-        return userTokenEntityList.stream()
+        return userTokens.stream()
                 .filter(entity -> activationType.equals(entity.getActivationType()))
                 .collect(Collectors.toList());
     }

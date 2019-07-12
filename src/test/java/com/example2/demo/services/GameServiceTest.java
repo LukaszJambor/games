@@ -53,7 +53,7 @@ public class GameServiceTest {
         when(gameEntityToGameDataConverter.toEntity(any())).thenReturn(new GameEntity());
 
         //when
-        gameService.addGame(new GameData());
+        gameService.addGame(new GameEntity());
 
         //then
         verify(gameRepository, times(1)).save(any());
@@ -75,7 +75,7 @@ public class GameServiceTest {
         when(gameEntityToGameDataConverter.toDto(gameEntity2)).thenReturn(gameData2);
 
         //when
-        List<GameData> games = gameService.getGames();
+        List<GameEntity> games = gameService.getGames();
 
         //then
         assertThat(games.get(0).getName()).isEqualTo("test1");
@@ -98,7 +98,7 @@ public class GameServiceTest {
         when(gameEntityToGameDataConverter.toDto(gameEntity1)).thenReturn(gameData1);
 
         //when
-        List<GameData> games = gameService.getGames("test1", "test2");
+        List<GameEntity> games = gameService.getGames("test1", "test2");
 
         //then
         assertThat(games.get(0).getName()).isEqualTo("test1");
@@ -115,7 +115,7 @@ public class GameServiceTest {
     private void setEntityData(GameEntity gameEntity1, String test1, String test2, DistributionPath key) {
         gameEntity1.setName(test1);
         gameEntity1.setType(test2);
-        gameEntity1.setProducerEntity(new ProducerEntity());
+        gameEntity1.setProducer(new ProducerEntity());
         gameEntity1.setDistributionPath(key);
     }
 }

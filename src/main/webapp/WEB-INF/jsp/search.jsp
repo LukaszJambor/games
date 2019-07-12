@@ -3,7 +3,7 @@
 <html>
 <head></head>
 <body>
-<form:form method="post" modelAttribute="queryData">
+<form:form action="/" method="get" modelAttribute="queryData">
     <table>
         <tr>
             <td><form:label path="name">Tytuł</form:label></td>

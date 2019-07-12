@@ -18,11 +18,11 @@ public class LendEntity {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
-    private UserEntity userEntity;
+    private UserEntity user;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "game_id")
-    private GameEntity gameEntity;
+    private GameEntity game;
 
     @CreationTimestamp
     private LocalDateTime lendStartDate;

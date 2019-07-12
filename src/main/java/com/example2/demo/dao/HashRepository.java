@@ -11,5 +11,5 @@ import java.util.List;
 public interface HashRepository extends JpaRepository<UserTokenEntity, Long> {
     UserTokenEntity findActivationEntityByHashAndActivationTimestampIsNull(String hash);
 
-    List<UserTokenEntity> findActivationEntityByCreationTimestampBefore(LocalDateTime creationTimestamp);
+    List<UserTokenEntity> findActivationEntityByCreationTimestampBeforeAndActivationTimestampIsNull(LocalDateTime creationTimestamp);
 }

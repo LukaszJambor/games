@@ -28,10 +28,10 @@ public class GameEntity {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="producer_key")
-    private ProducerEntity producerEntity;
+    private ProducerEntity producer;
 
     @Embedded
-    private PriceEntity priceEntity;
+    private PriceEntity price;
 
-    private int quantity;
+    private Integer quantity;
 }

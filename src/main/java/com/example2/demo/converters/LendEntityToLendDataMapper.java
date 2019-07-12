@@ -8,9 +8,9 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface LendEntityToLendDataMapper {
 
-    @Mapping(target = "title", source = "gameEntity.name")
+    @Mapping(target = "title", source = "game.name")
     @Mapping(target = "lendStartDate", source = "lendStartDate")
     @Mapping(target = "lendEndDate", source = "lendEndDate")
-    @Mapping(target = "gameId", source = "gameEntity.id")
+    @Mapping(target = "gameId", source = "game.id")
     LendData toDto(LendEntity lendEntity);
 }

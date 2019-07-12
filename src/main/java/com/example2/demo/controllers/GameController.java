@@ -1,7 +1,9 @@
 package com.example2.demo.controllers;
 
+import com.example2.demo.converters.GameEntityGameDataMapper;
 import com.example2.demo.data.GameData;
 import com.example2.demo.data.QueryData;
+import com.example2.demo.model.GameEntity;
 import com.example2.demo.services.GameService;
 import com.example2.demo.services.UserService;
 import org.springframework.stereotype.Controller;
@@ -12,6 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * Created by USER on 24.05.2019.
  */
@@ -20,10 +25,12 @@ public class GameController {
 
     private GameService gameService;
     private UserService userService;
+    private GameEntityGameDataMapper gameEntityGameDataMapper;
 
-    public GameController(GameService gameService, UserService userService) {
+    public GameController(GameService gameService, UserService userService, GameEntityGameDataMapper gameEntityGameDataMapper) {
         this.gameService = gameService;
         this.userService = userService;
+        this.gameEntityGameDataMapper = gameEntityGameDataMapper;
     }
 
     @RequestMapping(value = "/addGame", method = RequestMethod.GET)
@@ -34,16 +41,16 @@ public class GameController {
 
     @RequestMapping(value = "/addGame", method = RequestMethod.POST)
     public String addGame(@ModelAttribute("gameData") GameData gameData) {
-        gameService.addGame(gameData);
+        gameService.addGame(gameEntityGameDataMapper.toEntity(gameData));
         return "redirect:/";
     }
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String showGames(@RequestParam(value = "name", required = false) String name, @RequestParam(value = "producer", required = false) String producer, Model model) {
         if (StringUtils.isEmpty(name) && StringUtils.isEmpty(producer)) {
-            model.addAttribute("games", gameService.getGames());
+            model.addAttribute("games", convertToData(gameService.getGames()));
         } else {
-            model.addAttribute("games", gameService.getGames(name, producer));
+            model.addAttribute("games", convertToData(gameService.getGames(name, producer)));
         }
         model.addAttribute("userId", userService.getLoggedUserId());
         return "listing";
@@ -55,8 +62,9 @@ public class GameController {
         return "search";
     }
 
-    @RequestMapping(value = "/search", method = RequestMethod.POST)
-    public String search(@ModelAttribute("queryData") QueryData queryData) {
-        return "redirect:/?name=" + queryData.getName() + "&producer=" + queryData.getProducer();
+    private List<GameData> convertToData(List<GameEntity> all) {
+        return all.stream()
+                .map(game -> gameEntityGameDataMapper.toDto(game))
+                .collect(Collectors.toList());
     }
 }

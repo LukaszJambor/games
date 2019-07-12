@@ -1,6 +1,9 @@
 package com.example2.demo.controllers;
 
+import com.example2.demo.converters.LendEntityToLendDataMapper;
+import com.example2.demo.converters.UserEntityUserDataMapper;
 import com.example2.demo.data.UserData;
+import com.example2.demo.model.LendEntity;
 import com.example2.demo.model.UserEntity;
 import com.example2.demo.services.GameService;
 import com.example2.demo.services.UserService;
@@ -14,16 +17,23 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.validation.Valid;
 import java.rmi.activation.ActivationException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 public class UserController {
 
     private UserService userService;
     private GameService gameService;
+    private UserEntityUserDataMapper userEntityUserDataMapper;
+    private LendEntityToLendDataMapper lendEntityToLendDataMapper;
 
-    public UserController(UserService userService, GameService gameService) {
+    public UserController(UserService userService, GameService gameService, UserEntityUserDataMapper userEntityUserDataMapper,
+                          LendEntityToLendDataMapper lendEntityToLendDataMapper) {
         this.userService = userService;
         this.gameService = gameService;
+        this.userEntityUserDataMapper = userEntityUserDataMapper;
+        this.lendEntityToLendDataMapper = lendEntityToLendDataMapper;
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
@@ -54,7 +64,7 @@ public class UserController {
             model.addAttribute("error", result.getAllErrors());
             return "/register";
         }
-        userService.addUser(userData);
+        userService.addUser(userEntityUserDataMapper.toEntity(userData));
         return "redirect:/";
     }
 
@@ -70,6 +80,10 @@ public class UserController {
 
     @RequestMapping(value = "/user/{userId}/games", method = RequestMethod.GET)
     public String lendGames(@PathVariable("userId") Long userId, Model model) {
+        List<LendEntity> lendEntityList = gameService.getUserGamePanel(userId);
+        lendEntityList.stream()
+                .map(lendEntity -> lendEntityToLendDataMapper.toDto(lendEntity))
+                .collect(Collectors.toList());
         model.addAttribute("games", gameService.getUserGamePanel(userId));
         model.addAttribute("userId", userId);
         return "userLendGames";

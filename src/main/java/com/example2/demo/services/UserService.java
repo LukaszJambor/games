@@ -1,9 +1,7 @@
 package com.example2.demo.services;
 
-import com.example2.demo.converters.UserEntityUserDataMapper;
 import com.example2.demo.dao.HashRepository;
 import com.example2.demo.dao.UserRepository;
-import com.example2.demo.data.UserData;
 import com.example2.demo.exception.UserFoundException;
 import com.example2.demo.model.RoleEntity;
 import com.example2.demo.model.UserEntity;
@@ -30,15 +28,13 @@ import java.util.*;
 public class UserService implements UserDetailsService {
 
     private UserRepository userRepository;
-    private UserEntityUserDataMapper userEntityUserDataMapper;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     private RegistrationEmailSender registrationEmailSender;
     private HashRepository hashRepository;
 
-    public UserService(UserRepository userRepository, UserEntityUserDataMapper userEntityUserDataMapper, BCryptPasswordEncoder bCryptPasswordEncoder,
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder,
                        RegistrationEmailSender registrationEmailSender, HashRepository hashRepository) {
         this.userRepository = userRepository;
-        this.userEntityUserDataMapper = userEntityUserDataMapper;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.registrationEmailSender = registrationEmailSender;
         this.hashRepository = hashRepository;
@@ -52,25 +48,24 @@ public class UserService implements UserDetailsService {
             throw new UsernameNotFoundException(login);
         }
         Set<GrantedAuthority> role = new HashSet<>();
-        userEntityByLogin.getRoleEntityList().stream()
+        userEntityByLogin.getRoles().stream()
                 .forEach(roleInternal -> role.add(new SimpleGrantedAuthority(role.toString())));
-        return new User(userEntityByLogin.getLogin(), userEntityByLogin.getPassword(), userEntityByLogin.isActive(), true, true, true, role);
+        return new User(userEntityByLogin.getLogin(), userEntityByLogin.getPassword(), userEntityByLogin.getActive(), true, true, true, role);
     }
 
     @Transactional
-    public void addUser(UserData userData) {
-        UserEntity userEntityByLogin = userRepository.findUserEntityByLogin(userData.getLogin());
+    public void addUser(UserEntity userEntity) {
+        UserEntity userEntityByLogin = userRepository.findUserEntityByLogin(userEntity.getLogin());
 
-        if (userEntityByLogin != null && userEntityByLogin.isActive()) {
+        if (userEntityByLogin != null && userEntityByLogin.getActive()) {
             throw new UserFoundException();
         }
-        if (userEntityByLogin != null && !userEntityByLogin.isActive() && !userEntityByLogin.isActivationHashAvailable(ActivationType.EMAIL)) {
+        if (userEntityByLogin != null && !userEntityByLogin.getActive() && !userEntityByLogin.isActivationHashAvailable(ActivationType.EMAIL)) {
             setToken(userEntityByLogin);
             userRepository.save(userEntityByLogin);
             addToQueue(userEntityByLogin);
         }
         if (userEntityByLogin == null) {
-            UserEntity userEntity = userEntityUserDataMapper.toEntity(userData);
             setRole(userEntity);
             setToken(userEntity);
             userEntity.setPassword(bCryptPasswordEncoder.encode(userEntity.getPassword()));
@@ -86,7 +81,7 @@ public class UserService implements UserDetailsService {
             throw new ActivationException("token not found");
         }
         userTokenEntityByHash.setActivationTimestamp(LocalDateTime.now());
-        UserEntity userEntity = userTokenEntityByHash.getUserEntity();
+        UserEntity userEntity = userTokenEntityByHash.getUser();
         userEntity.setActive(Boolean.TRUE);
         hashRepository.save(userTokenEntityByHash);
     }
@@ -113,7 +108,7 @@ public class UserService implements UserDetailsService {
         userTokenEntity.setActivationType(ActivationType.EMAIL);
         List<UserTokenEntity> userTokenEntityList = new ArrayList<>();
         userTokenEntityList.add(userTokenEntity);
-        userEntity.setUserTokenEntityList(userTokenEntityList);
+        userEntity.setUserTokens(userTokenEntityList);
     }
 
     private void setRole(UserEntity userEntity) {
@@ -121,6 +116,6 @@ public class UserService implements UserDetailsService {
         roleEntity.setRole(Role.USER);
         List<RoleEntity> roleEntityList = new ArrayList<>();
         roleEntityList.add(roleEntity);
-        userEntity.setRoleEntityList(roleEntityList);
+        userEntity.setRoles(roleEntityList);
     }
 }

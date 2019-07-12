@@ -10,7 +10,7 @@ import java.util.Optional;
 @Repository
 public interface LendRepository extends JpaRepository<LendEntity, Long> {
 
-    List<LendEntity> findByUserEntityId(Long userId);
+    List<LendEntity> findByUserId(Long userId);
 
-    Optional<LendEntity> findByUserEntityIdAndGameEntityIdAndLendEndDateIsNull(Long userId, Long gameId);
+    Optional<LendEntity> findByUserIdAndGameIdAndLendEndDateIsNull(Long userId, Long gameId);
 }

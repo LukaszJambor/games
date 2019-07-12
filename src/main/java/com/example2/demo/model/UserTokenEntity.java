@@ -27,7 +27,7 @@ public class UserTokenEntity {
     @CreationTimestamp
     private LocalDateTime creationTimestamp;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name="user_key")
-    private UserEntity userEntity;
+    private UserEntity user;
 }

@@ -31,7 +31,7 @@ public class GameSpecification {
                 return null;
             }
             if ("producerName".equals(attribute)) {
-               return cb.like(root.get("producerEntity").get(attribute), value);
+               return cb.like(root.get("producer").get(attribute), value);
             }
 
             return cb.like(root.get(attribute), value);

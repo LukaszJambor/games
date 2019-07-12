@@ -11,13 +11,13 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface GameEntityGameDataMapper {
-    @Mapping(target = "producerName", source = "producerEntity.producerName")
-    @Mapping(target = "price", source = "priceEntity.price")
-    @Mapping(target = "currency", source = "priceEntity.currency")
+    @Mapping(target = "producerName", source = "producer.producerName")
+    @Mapping(target = "price", source = "price.price")
+    @Mapping(target = "currency", source = "price.currency")
     GameData toDto(GameEntity gameEntity);
 
-    @Mapping(source = "producerName", target = "producerEntity.producerName")
-    @Mapping(source = "price", target = "priceEntity.price")
-    @Mapping(source = "currency", target = "priceEntity.currency")
+    @Mapping(source = "producerName", target = "producer.producerName")
+    @Mapping(source = "price", target = "price.price")
+    @Mapping(source = "currency", target = "price.currency")
     GameEntity toEntity(GameData gameData);
 }

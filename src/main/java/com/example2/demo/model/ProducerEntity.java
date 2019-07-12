@@ -22,5 +22,5 @@ public class ProducerEntity {
     private String producerName;
 
     @OneToMany(cascade = CascadeType.ALL)
-    private List<AddressEntity> addressEntity;
+    private List<AddressEntity> addresses;
 }
