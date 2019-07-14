@@ -1,4 +1,4 @@
-package com.example2.demo.cronjob;
+package com.example2.demo.cronjob.oldTokens;
 
 import com.example2.demo.dao.HashRepository;
 import com.example2.demo.model.UserTokenEntity;

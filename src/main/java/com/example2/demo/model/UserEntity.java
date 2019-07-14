@@ -35,6 +35,11 @@ public class UserEntity {
     @JoinColumn(name = "user_key")
     private List<UserTokenEntity> userTokens;
 
+    @Lazy
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "wallet_key")
+    private WalletEntity wallet;
+
     public String getLastHash(ActivationType activationType) {
             return getTokensWithSelectedType(activationType).stream()
                     .reduce((first, second) -> second)

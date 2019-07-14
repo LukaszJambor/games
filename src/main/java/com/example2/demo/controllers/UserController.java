@@ -2,6 +2,7 @@ package com.example2.demo.controllers;
 
 import com.example2.demo.converters.LendEntityToLendDataMapper;
 import com.example2.demo.converters.UserEntityUserDataMapper;
+import com.example2.demo.data.LendData;
 import com.example2.demo.data.UserData;
 import com.example2.demo.model.LendEntity;
 import com.example2.demo.model.UserEntity;
@@ -81,10 +82,10 @@ public class UserController {
     @RequestMapping(value = "/user/{userId}/games", method = RequestMethod.GET)
     public String lendGames(@PathVariable("userId") Long userId, Model model) {
         List<LendEntity> lendEntityList = gameService.getUserGamePanel(userId);
-        lendEntityList.stream()
+        List<LendData> games = lendEntityList.stream()
                 .map(lendEntity -> lendEntityToLendDataMapper.toDto(lendEntity))
                 .collect(Collectors.toList());
-        model.addAttribute("games", gameService.getUserGamePanel(userId));
+        model.addAttribute("games", games);
         model.addAttribute("userId", userId);
         return "userLendGames";
     }

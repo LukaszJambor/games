@@ -6,6 +6,7 @@ import com.example2.demo.exception.UserFoundException;
 import com.example2.demo.model.RoleEntity;
 import com.example2.demo.model.UserEntity;
 import com.example2.demo.model.UserTokenEntity;
+import com.example2.demo.model.WalletEntity;
 import com.example2.demo.model.enums.ActivationType;
 import com.example2.demo.model.enums.Role;
 import com.example2.demo.queue.RegistrationEmailSender;
@@ -68,11 +69,17 @@ public class UserService implements UserDetailsService {
         if (userEntityByLogin == null) {
             setRole(userEntity);
             setToken(userEntity);
+            setWallet(userEntity);
             userEntity.setPassword(bCryptPasswordEncoder.encode(userEntity.getPassword()));
             userEntity.setActive(Boolean.FALSE);
             userRepository.save(userEntity);
             addToQueue(userEntity);
         }
+    }
+
+    private void setWallet(UserEntity userEntity) {
+        WalletEntity walletEntity = new WalletEntity();
+        userEntity.setWallet(walletEntity);
     }
 
     public void confirmAccount(String hash) throws ActivationException {

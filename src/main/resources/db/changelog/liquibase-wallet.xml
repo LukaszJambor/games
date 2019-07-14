@@ -1,0 +1,32 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+    <changeSet author="lukasz" id="1">
+        <createTable tableName="wallet_entity">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="money" type="DECIMAL"><constraints unique="true"/></column>
+        </createTable>
+        <createTable tableName="payment_entity">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="payment_time" type="DATETIME"/>
+            <column name="cost" type="DECIMAL"/>
+            <column name="user_id" type="BIGINT"/>
+            <column name="game_id" type="BIGINT"/>
+        </createTable>
+        <addColumn tableName="user_entity">
+            <column name="wallet_key" type="BIGINT"/>
+        </addColumn>
+        <addForeignKeyConstraint baseTableName="user_entity" baseColumnNames="wallet_key" constraintName="wallet_entity_w"
+                                 referencedTableName="wallet_entity" referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="payment_entity" baseColumnNames="user_id" constraintName="payment_entity_p"
+                                 referencedTableName="user_entity" referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="payment_entity" baseColumnNames="game_id" constraintName="payment_entity_g"
+                                 referencedTableName="game_entity" referencedColumnNames="id"/>
+    </changeSet>
+</databaseChangeLog>

@@ -3,6 +3,7 @@ package com.example2.demo.controllers.advice;
 import com.example2.demo.data.UserData;
 import com.example2.demo.exception.DuplicatedLendException;
 import com.example2.demo.exception.NotEnoughCopiesException;
+import com.example2.demo.exception.NotEnoughMoneyException;
 import com.example2.demo.exception.UserFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -30,6 +31,12 @@ public class UserControllerAdvice {
     @ExceptionHandler(value = DuplicatedLendException.class)
     public String informationAboutLendGame(RedirectAttributes redirectAttrs) {
         redirectAttrs.addFlashAttribute("doubleLend", "you cant lend twice same game");
+        return "redirect:/";
+    }
+
+    @ExceptionHandler(value = NotEnoughMoneyException.class)
+    public String informationAboutMoney(RedirectAttributes redirectAttrs) {
+        redirectAttrs.addFlashAttribute("noMoney", "no money");
         return "redirect:/";
     }
 }

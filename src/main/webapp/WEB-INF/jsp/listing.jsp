@@ -22,6 +22,7 @@
 </table>
 <p1>${notAvailable}</p1>
 <p1>${doubleLend}</p1>
+<p1>${noMoney}</p1>
 <br>
 <a href="<c:url value="/addGame"/>">add</a>
 <br>

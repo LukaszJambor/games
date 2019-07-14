@@ -40,6 +40,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/success").authenticated()
-                .antMatchers("/user/**/games").authenticated();
+                .antMatchers("/user/**/games").authenticated()
+                .antMatchers("/user/**/history").authenticated();
     }
 }
