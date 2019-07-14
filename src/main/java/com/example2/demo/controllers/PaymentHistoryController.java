@@ -3,6 +3,7 @@ package com.example2.demo.controllers;
 import com.example2.demo.converters.PaymentEntityToPaymentDataMapper;
 import com.example2.demo.data.PaymentData;
 import com.example2.demo.services.PaymentHistoryService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,6 +24,7 @@ public class PaymentHistoryController {
         this.paymentEntityToPaymentDataMapper = paymentEntityToPaymentDataMapper;
     }
 
+    @PreAuthorize(value = "authentication.principal.userId == #userId")
     @RequestMapping(value = "/user/{userId}/history", method = RequestMethod.GET)
     public String getHistory(@PathVariable("userId") Long userId, Model model) {
         model.addAttribute("payments", getHistory(userId));

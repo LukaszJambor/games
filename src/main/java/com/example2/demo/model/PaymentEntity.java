@@ -24,12 +24,12 @@ public class PaymentEntity {
     private BigDecimal cost;
 
     @Lazy
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private UserEntity user;
 
     @Lazy
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     @JoinColumn(name = "game_id")
     private GameEntity game;
 }

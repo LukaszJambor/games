@@ -6,9 +6,7 @@ import com.example2.demo.exception.DuplicatedLendException;
 import com.example2.demo.exception.NotEnoughCopiesException;
 import com.example2.demo.exception.NotEnoughMoneyException;
 import com.example2.demo.model.*;
-import com.example2.demo.util.SecurityUtil;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,18 +57,12 @@ public class GameService {
 
     public List<LendEntity> getUserGamePanel(Long userId) {
         UserEntity userEntity = userRepository.getOne(userId);
-        if (SecurityUtil.getUserName().equals(userEntity.getLogin())) {
             return lendRepository.findByUserId(userId);
-        }
-        throw new AccessDeniedException("request userId is different than in session");
     }
 
     @Transactional
     public void createLend(Long userId, Long gameId) {
         UserEntity userEntity = userRepository.getOne(userId);
-        if (!SecurityUtil.getUserName().equals(userEntity.getLogin())) {
-            throw new AccessDeniedException("request userId is different than in session");
-        }
         Optional<LendEntity> lendEntity = lendRepository.findByUserIdAndGameIdAndLendEndDateIsNull(userId, gameId);
         if (lendEntity.isPresent()) {
             throw new DuplicatedLendException("impossible to lend same game twice");
@@ -106,10 +98,6 @@ public class GameService {
 
     @Transactional
     public void createReturn(Long userId, Long gameId) {
-        UserEntity userEntity = userRepository.getOne(userId);
-        if (!SecurityUtil.getUserName().equals(userEntity.getLogin())) {
-            throw new AccessDeniedException("request userId is different than in session");
-        }
         Optional<LendEntity> lendEntity = lendRepository.findByUserIdAndGameIdAndLendEndDateIsNull(userId, gameId);
         if(lendEntity.isPresent()){
             createReturn(lendEntity.get());

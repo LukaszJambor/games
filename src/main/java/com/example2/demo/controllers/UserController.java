@@ -8,6 +8,7 @@ import com.example2.demo.model.LendEntity;
 import com.example2.demo.model.UserEntity;
 import com.example2.demo.services.GameService;
 import com.example2.demo.services.UserService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -79,6 +80,7 @@ public class UserController {
         return "confirmationSuccessfull";
     }
 
+    @PreAuthorize(value = "authentication.principal.userId == #userId")
     @RequestMapping(value = "/user/{userId}/games", method = RequestMethod.GET)
     public String lendGames(@PathVariable("userId") Long userId, Model model) {
         List<LendEntity> lendEntityList = gameService.getUserGamePanel(userId);
@@ -90,12 +92,14 @@ public class UserController {
         return "userLendGames";
     }
 
+    @PreAuthorize(value = "authentication.principal.userId == #userId")
     @RequestMapping(value = "/user/{userId}/lend/{gameId}", method = RequestMethod.GET)
     public String createLend(@PathVariable("userId") Long userId, @PathVariable("gameId") Long gameId) {
         gameService.createLend(userId, gameId);
         return "redirect:/user/" + userId + "/games";
     }
 
+    @PreAuthorize(value = "authentication.principal.userId == #userId")
     @RequestMapping(value = "/user/{userId}/return/{gameId}", method = RequestMethod.GET)
     public String createReturn(@PathVariable("userId") Long userId, @PathVariable("gameId") Long gameId) {
         gameService.createReturn(userId, gameId);

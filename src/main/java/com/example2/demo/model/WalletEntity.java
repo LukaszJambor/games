@@ -19,6 +19,6 @@ public class WalletEntity {
     private BigDecimal money;
 
     @Lazy
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "wallet")
+    @OneToOne(mappedBy = "wallet")
     private UserEntity user;
 }

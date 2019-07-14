@@ -11,12 +11,6 @@ import com.example2.demo.model.enums.ActivationType;
 import com.example2.demo.model.enums.Role;
 import com.example2.demo.queue.RegistrationEmailSender;
 import com.example2.demo.util.SecurityUtil;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +20,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Component
-public class UserService implements UserDetailsService {
+public class UserService {
 
     private UserRepository userRepository;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -39,19 +33,6 @@ public class UserService implements UserDetailsService {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.registrationEmailSender = registrationEmailSender;
         this.hashRepository = hashRepository;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
-        UserEntity userEntityByLogin = userRepository.findUserEntityByLogin(login);
-        if (userEntityByLogin == null) {
-            throw new UsernameNotFoundException(login);
-        }
-        Set<GrantedAuthority> role = new HashSet<>();
-        userEntityByLogin.getRoles().stream()
-                .forEach(roleInternal -> role.add(new SimpleGrantedAuthority(role.toString())));
-        return new User(userEntityByLogin.getLogin(), userEntityByLogin.getPassword(), userEntityByLogin.getActive(), true, true, true, role);
     }
 
     @Transactional

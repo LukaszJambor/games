@@ -17,6 +17,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private CustomUserDetailsService customUserDetailsService;
+
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
@@ -25,7 +28,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth
-                .userDetailsService(userService).passwordEncoder(bCryptPasswordEncoder());
+                .userDetailsService(customUserDetailsService).passwordEncoder(bCryptPasswordEncoder());
     }
 
     @Override
@@ -43,4 +46,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/user/**/games").authenticated()
                 .antMatchers("/user/**/history").authenticated();
     }
+
+
 }
