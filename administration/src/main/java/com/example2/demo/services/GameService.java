@@ -1,11 +1,11 @@
 package com.example2.demo.services;
 
-import dao.*;
-import dao.specifications.GameSpecification;
+import com.example2.demo.dao.*;
+import com.example2.demo.dao.specifications.GameSpecification;
 import com.example2.demo.exception.DuplicatedLendException;
 import com.example2.demo.exception.NotEnoughCopiesException;
 import com.example2.demo.exception.NotEnoughMoneyException;
-import model.*;
+import com.example2.demo.model.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;

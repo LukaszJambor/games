@@ -1,9 +1,9 @@
 package com.example2.demo.cronjob.lendAdditionalCosts;
 
-import dao.LendRepository;
-import dao.PaymentHistoryRepository;
-import dao.WalletRepository;
-import model.*;
+import com.example2.demo.dao.LendRepository;
+import com.example2.demo.dao.PaymentHistoryRepository;
+import com.example2.demo.dao.WalletRepository;
+import com.example2.demo.model.*;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
