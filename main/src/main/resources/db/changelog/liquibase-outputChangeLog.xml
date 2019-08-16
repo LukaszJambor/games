@@ -35,10 +35,13 @@
             <column name="city" type="VARCHAR(255)"/>
             <column name="street" type="VARCHAR(255)"/>
             <column name="street_number" type="VARCHAR(255)"/>
+            <column name="producer_key" type="BIGINT"/>
         </createTable>
         <addForeignKeyConstraint baseTableName="game_entity" baseColumnNames="producer_key" constraintName="producer_key_c"
                                  referencedTableName="producer_entity" referencedColumnNames="id"/>
         <addForeignKeyConstraint baseTableName="producer_entity" baseColumnNames="address_key" constraintName="address_key_c"
                                  referencedTableName="address_entity" referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="address_entity" baseColumnNames="producer_key" constraintName="producer_key_a"
+                                 referencedTableName="producer_entity" referencedColumnNames="id"/>
     </changeSet>
 </databaseChangeLog>

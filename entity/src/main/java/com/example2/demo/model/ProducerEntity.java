@@ -22,5 +22,6 @@ public class ProducerEntity {
     private String producerName;
 
     @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "producer_key")
     private List<AddressEntity> addresses;
 }

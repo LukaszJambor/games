@@ -8,6 +8,7 @@
         <module>dto</module>
         <module>entity</module>
         <module>main</module>
+        <module>api</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
