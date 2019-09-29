@@ -28,19 +28,21 @@ public class GameService {
     private LendRepository lendRepository;
     private WalletRepository walletRepository;
     private PaymentHistoryRepository paymentHistoryRepository;
+    private CommentRepository commentRepository;
 
     @Value("${lend.price}")
     private BigDecimal lendValue;
 
     public GameService(GameRepository gameRepository, GameSpecification gameSpecification,
                        UserRepository userRepository, LendRepository lendRepository, WalletRepository walletRepository,
-                       PaymentHistoryRepository paymentHistoryRepository) {
+                       PaymentHistoryRepository paymentHistoryRepository, CommentRepository commentRepository) {
         this.gameRepository = gameRepository;
         this.gameSpecification = gameSpecification;
         this.userRepository = userRepository;
         this.lendRepository = lendRepository;
         this.walletRepository = walletRepository;
         this.paymentHistoryRepository = paymentHistoryRepository;
+        this.commentRepository = commentRepository;
     }
 
     public void addGame(GameEntity gameEntity) {
@@ -105,6 +107,10 @@ public class GameService {
         }
     }
 
+    @Transactional
+    public void createComment(Long gameId, CommentEntity commentEntity){
+        commentRepository.save(commentEntity);
+    }
 
     private void updateQuantity(GameEntity gameEntity) {
         gameEntity.setQuantity(gameEntity.getQuantity() - 1);

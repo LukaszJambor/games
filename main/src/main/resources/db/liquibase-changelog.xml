@@ -8,4 +8,5 @@
     <include file="changelog/liquibase-security.xml" relativeToChangelogFile="true"/>
     <include file="changelog/liquibase-quantity.xml" relativeToChangelogFile="true"/>
     <include file="changelog/liquibase-wallet.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/liquibase-comments.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

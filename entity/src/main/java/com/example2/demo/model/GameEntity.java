@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * Created by USER on 25.05.2019.
@@ -34,4 +35,8 @@ public class GameEntity {
     private PriceEntity price;
 
     private Integer quantity;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "game_key")
+    private List<CommentEntity> comments;
 }

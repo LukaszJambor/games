@@ -1,4 +1,5 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 
 <html>
 <head></head>
@@ -6,11 +7,11 @@
 <table>
     <c:forEach items="${games}" var="game">
         <c:if test="${empty game.lendEndDate}">
-        <tr>
-            <td>${game.title}</td>
-            <td>${game.lendStartDate}</td>
+            <tr>
+                <td>${game.title}</td>
+                <td>${game.lendStartDate}</td>
                 <td><a href="<c:url value="/user/${userId}/return/${game.gameId}"/>">Zwróć</a></td>
-        </tr>
+            </tr>
         </c:if>
     </c:forEach>
     <br>
@@ -27,5 +28,16 @@
         </c:if>
     </c:forEach>
 </table>
+<c:if test="${gameId != null}">
+    <form:form action="/user/${userId}/game/${gameId}/addComment" method="post" modelAttribute="commentData">
+        <table>
+            <tr>
+                <td><form:label path="comment">Komentarz</form:label></td>
+                <td><form:input path="comment"/></td>
+            </tr>
+        </table>
+        <tr><td><input type="submit" value="Submit"/></td></tr>
+    </form:form>
+</c:if>
 </body>
 </html>
