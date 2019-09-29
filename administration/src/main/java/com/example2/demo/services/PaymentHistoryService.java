@@ -1,8 +1,8 @@
 package com.example2.demo.services;
 
-import dao.PaymentHistoryRepository;
-import dao.UserRepository;
-import model.PaymentEntity;
+import com.example2.demo.dao.PaymentHistoryRepository;
+import com.example2.demo.dao.UserRepository;
+import com.example2.demo.model.PaymentEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

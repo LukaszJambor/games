@@ -1,7 +1,7 @@
 package com.example2.demo.cronjob.oldTokens;
 
-import dao.HashRepository;
-import model.UserTokenEntity;
+import com.example2.demo.dao.HashRepository;
+import com.example2.demo.model.UserTokenEntity;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;

@@ -1,11 +1,14 @@
 package com.example2.demo.controllers;
 
+import com.example2.demo.converters.CommentEntityToCommentDataMapper;
 import com.example2.demo.converters.LendEntityToLendDataMapper;
 import com.example2.demo.converters.UserEntityUserDataMapper;
+import com.example2.demo.data.CommentData;
 import com.example2.demo.data.LendData;
 import com.example2.demo.data.UserData;
-import model.LendEntity;
-import model.UserEntity;
+import com.example2.demo.model.CommentEntity;
+import com.example2.demo.model.LendEntity;
+import com.example2.demo.model.UserEntity;
 import com.example2.demo.services.GameService;
 import com.example2.demo.services.UserService;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
 import java.rmi.activation.ActivationException;
@@ -29,13 +33,15 @@ public class UserController {
     private GameService gameService;
     private UserEntityUserDataMapper userEntityUserDataMapper;
     private LendEntityToLendDataMapper lendEntityToLendDataMapper;
+    private CommentEntityToCommentDataMapper commentEntityToCommentDataMapper;
 
     public UserController(UserService userService, GameService gameService, UserEntityUserDataMapper userEntityUserDataMapper,
-                          LendEntityToLendDataMapper lendEntityToLendDataMapper) {
+                          LendEntityToLendDataMapper lendEntityToLendDataMapper, CommentEntityToCommentDataMapper commentEntityToCommentDataMapper) {
         this.userService = userService;
         this.gameService = gameService;
         this.userEntityUserDataMapper = userEntityUserDataMapper;
         this.lendEntityToLendDataMapper = lendEntityToLendDataMapper;
+        this.commentEntityToCommentDataMapper = commentEntityToCommentDataMapper;
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
@@ -89,6 +95,8 @@ public class UserController {
                 .collect(Collectors.toList());
         model.addAttribute("games", games);
         model.addAttribute("userId", userId);
+        model.addAttribute("gameId", model.asMap().get("gameId"));
+        model.addAttribute("commentData", new CommentData());
         return "userLendGames";
     }
 
@@ -101,8 +109,18 @@ public class UserController {
 
     @PreAuthorize(value = "authentication.principal.userId == #userId")
     @RequestMapping(value = "/user/{userId}/return/{gameId}", method = RequestMethod.GET)
-    public String createReturn(@PathVariable("userId") Long userId, @PathVariable("gameId") Long gameId) {
+    public String createReturn(@PathVariable("userId") Long userId, @PathVariable("gameId") Long gameId, RedirectAttributes redirectAttrs) {
         gameService.createReturn(userId, gameId);
+        redirectAttrs.addFlashAttribute("gameId", gameId);
+        return "redirect:/user/" + userId + "/games";
+    }
+
+    @RequestMapping(value = "/user/{userId}/game/{gameId}/addComment", method = RequestMethod.POST)
+    public String commentView(@PathVariable("userId") Long userId, @PathVariable("gameId") Long gameId,
+                              @ModelAttribute("commentData") CommentData commentData) {
+        CommentEntity commentEntity = commentEntityToCommentDataMapper.toEntity(commentData);
+        commentEntity.setGameKey(gameId);
+        gameService.createComment(gameId, commentEntity);
         return "redirect:/user/" + userId + "/games";
     }
 }

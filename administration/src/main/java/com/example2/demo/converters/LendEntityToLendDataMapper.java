@@ -1,11 +1,13 @@
 package com.example2.demo.converters;
 
 import com.example2.demo.data.LendData;
-import model.LendEntity;
+import com.example2.demo.model.LendEntity;
+import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring",
+        injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface LendEntityToLendDataMapper {
 
     @Mapping(target = "title", source = "game.name")

@@ -7,7 +7,8 @@
         <module>administration</module>
         <module>dto</module>
         <module>entity</module>
-        <module>userAdministration</module>
+        <module>main</module>
+        <module>api</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>

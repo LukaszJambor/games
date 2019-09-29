@@ -1,0 +1,22 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+    <changeSet author="lukasz" id="1">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="comment_entity"/>
+            </not>
+        </preConditions>
+        <createTable tableName="comment_entity">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="comment" type="VARCHAR(255)"></column>
+            <column name="game_key" type="BIGINT"></column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="comment_entity" baseColumnNames="game_key" constraintName="game_key_c"
+                                 referencedTableName="game_entity" referencedColumnNames="id"/>
+    </changeSet>
+</databaseChangeLog>

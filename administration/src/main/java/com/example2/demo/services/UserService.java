@@ -1,14 +1,14 @@
 package com.example2.demo.services;
 
-import dao.HashRepository;
-import dao.UserRepository;
+import com.example2.demo.dao.HashRepository;
+import com.example2.demo.dao.UserRepository;
 import com.example2.demo.exception.UserFoundException;
-import model.RoleEntity;
-import model.UserEntity;
-import model.UserTokenEntity;
-import model.WalletEntity;
-import model.enums.ActivationType;
-import model.enums.Role;
+import com.example2.demo.model.RoleEntity;
+import com.example2.demo.model.UserEntity;
+import com.example2.demo.model.UserTokenEntity;
+import com.example2.demo.model.WalletEntity;
+import com.example2.demo.model.enums.ActivationType;
+import com.example2.demo.model.enums.Role;
 import com.example2.demo.queue.RegistrationEmailSender;
 import com.example2.demo.util.SecurityUtil;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

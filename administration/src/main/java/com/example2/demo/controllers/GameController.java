@@ -3,7 +3,7 @@ package com.example2.demo.controllers;
 import com.example2.demo.converters.GameEntityGameDataMapper;
 import com.example2.demo.data.GameData;
 import com.example2.demo.data.QueryData;
-import model.GameEntity;
+import com.example2.demo.model.GameEntity;
 import com.example2.demo.services.GameService;
 import com.example2.demo.services.UserService;
 import org.springframework.stereotype.Controller;
