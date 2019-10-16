@@ -22,6 +22,10 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
         <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.example2</groupId>
             <artifactId>entity</artifactId>
             <version>0.0.1-SNAPSHOT</version>

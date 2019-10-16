@@ -19,6 +19,8 @@ public class CommentEntity {
 
     private String comment;
 
+    private String uuid;
+
     @Column(name = "game_key")
     private Long gameKey;
 }

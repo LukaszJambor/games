@@ -2,6 +2,7 @@ package com.example2.demo.services;
 
 import com.example2.demo.dao.HashRepository;
 import com.example2.demo.dao.UserRepository;
+import com.example2.demo.exception.ActivationException;
 import com.example2.demo.exception.UserFoundException;
 import com.example2.demo.model.RoleEntity;
 import com.example2.demo.model.UserEntity;
@@ -15,7 +16,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.rmi.activation.ActivationException;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -63,7 +63,7 @@ public class UserService {
         userEntity.setWallet(walletEntity);
     }
 
-    public void confirmAccount(String hash) throws ActivationException {
+    public void confirmAccount(String hash) {
         UserTokenEntity userTokenEntityByHash = hashRepository.findActivationEntityByHashAndActivationTimestampIsNull(hash);
         if (userTokenEntityByHash == null) {
             throw new ActivationException("token not found");

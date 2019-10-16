@@ -15,6 +15,7 @@
             </column>
             <column name="comment" type="VARCHAR(255)"></column>
             <column name="game_key" type="BIGINT"></column>
+            <column name="uuid" type="VARCHAR(255)"></column>
         </createTable>
         <addForeignKeyConstraint baseTableName="comment_entity" baseColumnNames="game_key" constraintName="game_key_c"
                                  referencedTableName="game_entity" referencedColumnNames="id"/>

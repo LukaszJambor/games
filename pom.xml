@@ -36,6 +36,7 @@
         <thymeleaf.vrsion>2.1.6.RELEASE</thymeleaf.vrsion>
         <quartz.version>2.3.1</quartz.version>
         <guava.version>28.0-jre</guava.version>
+        <jjwt.version>0.9.1</jjwt.version>
         <start-class>com.example2.demo.DemoApplication</start-class>
     </properties>
 
@@ -128,6 +129,11 @@
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt</artifactId>
+                <version>${jjwt.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

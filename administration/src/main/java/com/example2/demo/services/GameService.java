@@ -3,6 +3,7 @@ package com.example2.demo.services;
 import com.example2.demo.dao.*;
 import com.example2.demo.dao.specifications.GameSpecification;
 import com.example2.demo.exception.DuplicatedLendException;
+import com.example2.demo.exception.LendNotFoundException;
 import com.example2.demo.exception.NotEnoughCopiesException;
 import com.example2.demo.exception.NotEnoughMoneyException;
 import com.example2.demo.model.*;
@@ -14,6 +15,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Created by USER on 25.05.2019.
@@ -59,7 +61,7 @@ public class GameService {
 
     public List<LendEntity> getUserGamePanel(Long userId) {
         UserEntity userEntity = userRepository.getOne(userId);
-            return lendRepository.findByUserId(userId);
+        return lendRepository.findByUserId(userId);
     }
 
     @Transactional
@@ -69,7 +71,7 @@ public class GameService {
         if (lendEntity.isPresent()) {
             throw new DuplicatedLendException("impossible to lend same game twice");
         }
-        if(lendValue.compareTo(userEntity.getWallet().getMoney())>=0){
+        if (lendValue.compareTo(userEntity.getWallet().getMoney()) >= 0) {
             throw new NotEnoughMoneyException("not enough money on account");
         }
         Optional<GameEntity> gameEntityById = gameRepository.findById(gameId);
@@ -101,15 +103,30 @@ public class GameService {
     @Transactional
     public void createReturn(Long userId, Long gameId) {
         Optional<LendEntity> lendEntity = lendRepository.findByUserIdAndGameIdAndLendEndDateIsNull(userId, gameId);
-        if(lendEntity.isPresent()){
+        if (lendEntity.isPresent()) {
             createReturn(lendEntity.get());
             updateStockAfterReturn(lendEntity.get());
+            createBaseComment();
+        } else {
+            throw new LendNotFoundException("lend not found");
         }
     }
 
-    @Transactional
-    public void createComment(Long gameId, CommentEntity commentEntity){
+    private void createBaseComment() {
+        CommentEntity commentEntity = new CommentEntity();
+        commentEntity.setUuid(UUID.randomUUID().toString());
         commentRepository.save(commentEntity);
+    }
+
+    @Transactional
+    public void createComment(CommentEntity commentEntity) {
+        Optional<CommentEntity> commentEntityByUuid = commentRepository.findCommentEntityByUuid(commentEntity.getUuid());
+        if (commentEntityByUuid.isPresent()) {
+            CommentEntity commentEntityInternal = commentEntityByUuid.get();
+            commentEntityInternal.setComment(commentEntity.getComment());
+            commentEntityInternal.setGameKey(commentEntity.getGameKey());
+            commentRepository.save(commentEntityInternal);
+        }
     }
 
     private void updateQuantity(GameEntity gameEntity) {
