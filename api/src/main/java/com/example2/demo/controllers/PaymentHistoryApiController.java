@@ -21,8 +21,7 @@ public class PaymentHistoryApiController {
         this.paymentEntityToPaymentDataMapper = paymentEntityToPaymentDataMapper;
     }
 
-    @GetMapping(value = "/user/{userId}/history")
-    @ResponseBody
+    @GetMapping(value = "/users/{userId}/histories")
     public ResponseEntity<List<PaymentData>> getHistory(@PathVariable("userId") Long userId) {
         return ResponseEntity.ok(paymentHistoryService.getHistory(userId).stream()
                 .map(historyEntry -> paymentEntityToPaymentDataMapper.toDto(historyEntry))

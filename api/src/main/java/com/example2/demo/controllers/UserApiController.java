@@ -8,8 +8,12 @@ import com.example2.demo.data.LendData;
 import com.example2.demo.data.UserData;
 import com.example2.demo.model.CommentEntity;
 import com.example2.demo.model.LendEntity;
+import com.example2.demo.model.UserEntity;
 import com.example2.demo.services.GameService;
 import com.example2.demo.services.UserService;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -42,7 +46,7 @@ public class UserApiController {
     @PostMapping(value = "/register")
     @ResponseStatus(HttpStatus.CREATED)
     public void register(@Valid @RequestBody UserData userData) {
-        userService.addUser(userEntityUserDataMapper.toEntity(userData));
+        UserEntity userEntity = userService.addUser(userEntityUserDataMapper.toEntity(userData));
     }
 
     @GetMapping(value = "/register/confirm/{hash}")
@@ -51,7 +55,7 @@ public class UserApiController {
     }
 
     @PreAuthorize(value = "authentication.principal.userId == #userId")
-    @GetMapping(value = "/user/{userId}/games")
+    @GetMapping(value = "/users/{userId}/games")
     public ResponseEntity<List<LendData>> lendGames(@PathVariable("userId") Long userId) {
         List<LendEntity> lendEntityList = gameService.getUserGamePanel(userId);
         List<LendData> games = lendEntityList.stream()
@@ -61,24 +65,42 @@ public class UserApiController {
     }
 
     @PreAuthorize(value = "authentication.principal.userId == #userId")
-    @GetMapping(value = "/user/{userId}/lend/{gameId}")
+    @PostMapping(value = "/users/{userId}/lends/{gameId}")
     @ResponseStatus(HttpStatus.CREATED)
-    public void createLend(@PathVariable("userId") Long userId, @PathVariable("gameId") Long gameId) {
-        gameService.createLend(userId, gameId);
+    public Resource<LendData> createLend(@PathVariable("userId") Long userId, @PathVariable("gameId") Long gameId) {
+        LendEntity lend = gameService.createLend(userId, gameId);
+        LendData lendResource = lendEntityToLendDataMapper.toDto(lend);
+        Link selfLink = ControllerLinkBuilder
+                .linkTo(UserApiController.class)
+                .slash("users/" + userId + "/lends/" + lendResource.getId())
+                .withSelfRel();
+        return new Resource<>(lendResource, selfLink);
     }
 
     @PreAuthorize(value = "authentication.principal.userId == #userId")
-    @GetMapping(value = "/user/{userId}/return/{gameId}")
-    @ResponseStatus(HttpStatus.CREATED)
-    public void createReturn(@PathVariable("userId") Long userId, @PathVariable("gameId") Long gameId) {
-        gameService.createReturn(userId, gameId);
+    @PutMapping(value = "/users/{userId}/returns/{gameId}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public Resource<LendData> createReturn(@PathVariable("userId") Long userId, @PathVariable("gameId") Long gameId) {
+        LendEntity aReturn = gameService.createReturn(userId, gameId);
+        LendData returnResource = lendEntityToLendDataMapper.toDto(aReturn);
+        Link selfLink = ControllerLinkBuilder
+                .linkTo(UserApiController.class)
+                .slash("users/" + userId + "/returns/" + returnResource.getId())
+                .withSelfRel();
+        return new Resource<>(returnResource, selfLink);
     }
 
     @PreAuthorize(value = "authentication.principal.userId == #userId")
-    @RequestMapping(value = "/user/{userId}/addComment", method = RequestMethod.POST)
+    @PostMapping(value = "/users/{userId}/comments")
     @ResponseStatus(HttpStatus.CREATED)
-    public void commentView(@PathVariable("userId") Long userId, @RequestBody CommentData commentData) {
+    public Resource<CommentData> commentView(@PathVariable("userId") Long userId, @RequestBody CommentData commentData) {
         CommentEntity commentEntity = commentEntityToCommentDataMapper.toEntity(commentData);
-        gameService.createComment(commentEntity);
+        CommentEntity comment = gameService.createComment(commentEntity);
+        CommentData commentResource = commentEntityToCommentDataMapper.toDto(comment);
+        Link selfLink = ControllerLinkBuilder
+                .linkTo(UserApiController.class)
+                .slash("users/" + userId + "/comments/" + commentResource.getId())
+                .withSelfRel();
+        return new Resource<>(commentResource, selfLink);
     }
 }

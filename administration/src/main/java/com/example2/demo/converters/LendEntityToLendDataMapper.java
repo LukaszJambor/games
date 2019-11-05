@@ -10,6 +10,7 @@ import org.mapstruct.Mapping;
         injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface LendEntityToLendDataMapper {
 
+    @Mapping(target = "id", source = "id")
     @Mapping(target = "title", source = "game.name")
     @Mapping(target = "lendStartDate", source = "lendStartDate")
     @Mapping(target = "lendEndDate", source = "lendEndDate")

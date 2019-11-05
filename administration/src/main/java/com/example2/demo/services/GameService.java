@@ -47,8 +47,8 @@ public class GameService {
         this.commentRepository = commentRepository;
     }
 
-    public void addGame(GameEntity gameEntity) {
-        gameRepository.save(gameEntity);
+    public GameEntity addGame(GameEntity gameEntity) {
+        return gameRepository.save(gameEntity);
     }
 
     public List<GameEntity> getGames() {
@@ -65,7 +65,7 @@ public class GameService {
     }
 
     @Transactional
-    public void createLend(Long userId, Long gameId) {
+    public LendEntity createLend(Long userId, Long gameId) {
         UserEntity userEntity = userRepository.getOne(userId);
         Optional<LendEntity> lendEntity = lendRepository.findByUserIdAndGameIdAndLendEndDateIsNull(userId, gameId);
         if (lendEntity.isPresent()) {
@@ -77,10 +77,11 @@ public class GameService {
         Optional<GameEntity> gameEntityById = gameRepository.findById(gameId);
         if (gameEntityById.isPresent() && gameEntityById.get().getQuantity() > 0) {
             GameEntity gameEntity = gameEntityById.get();
-            createLend(userEntity, gameEntity);
+            LendEntity lend = createLend(userEntity, gameEntity);
             createPaymentHistoryRecord(userEntity, gameEntity);
             updateQuantity(gameEntity);
             updateWallet(userEntity);
+            return lend;
         } else {
             throw new NotEnoughCopiesException("impossible to lend unavailable game");
         }
@@ -101,12 +102,13 @@ public class GameService {
     }
 
     @Transactional
-    public void createReturn(Long userId, Long gameId) {
+    public LendEntity createReturn(Long userId, Long gameId) {
         Optional<LendEntity> lendEntity = lendRepository.findByUserIdAndGameIdAndLendEndDateIsNull(userId, gameId);
         if (lendEntity.isPresent()) {
-            createReturn(lendEntity.get());
+            LendEntity aReturn = createReturn(lendEntity.get());
             updateStockAfterReturn(lendEntity.get());
             createBaseComment();
+            return aReturn;
         } else {
             throw new LendNotFoundException("lend not found");
         }
@@ -119,14 +121,15 @@ public class GameService {
     }
 
     @Transactional
-    public void createComment(CommentEntity commentEntity) {
+    public CommentEntity createComment(CommentEntity commentEntity) {
         Optional<CommentEntity> commentEntityByUuid = commentRepository.findCommentEntityByUuid(commentEntity.getUuid());
         if (commentEntityByUuid.isPresent()) {
             CommentEntity commentEntityInternal = commentEntityByUuid.get();
             commentEntityInternal.setComment(commentEntity.getComment());
             commentEntityInternal.setGameKey(commentEntity.getGameKey());
-            commentRepository.save(commentEntityInternal);
+            return commentRepository.save(commentEntityInternal);
         }
+        return null;
     }
 
     private void updateQuantity(GameEntity gameEntity) {
@@ -134,11 +137,11 @@ public class GameService {
         gameRepository.save(gameEntity);
     }
 
-    private void createLend(UserEntity userEntity, GameEntity gameEntity) {
+    private LendEntity createLend(UserEntity userEntity, GameEntity gameEntity) {
         LendEntity lendEntity = new LendEntity();
         lendEntity.setGame(gameEntity);
         lendEntity.setUser(userEntity);
-        lendRepository.save(lendEntity);
+        return lendRepository.save(lendEntity);
     }
 
     private void updateStockAfterReturn(LendEntity lendEntity) {
@@ -147,8 +150,8 @@ public class GameService {
         gameRepository.save(gameEntity);
     }
 
-    private void createReturn(LendEntity lendEntity) {
+    private LendEntity createReturn(LendEntity lendEntity) {
         lendEntity.setLendEndDate(LocalDateTime.now());
-        lendRepository.save(lendEntity);
+        return lendRepository.save(lendEntity);
     }
 }

@@ -4,6 +4,9 @@ import com.example2.demo.converters.GameEntityGameDataMapper;
 import com.example2.demo.data.GameData;
 import com.example2.demo.model.GameEntity;
 import com.example2.demo.services.GameService;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -27,7 +30,6 @@ public class GameApiController {
 
 
     @GetMapping(path = "/games")
-    @ResponseBody
     public ResponseEntity<List<GameData>> showGames(@RequestParam(value = "name", required = false) String name, @RequestParam(value = "producer", required = false) String producer) {
         if (StringUtils.isEmpty(name) && StringUtils.isEmpty(producer)) {
             return ResponseEntity.ok(convertToData(gameService.getGames()));
@@ -36,10 +38,16 @@ public class GameApiController {
         }
     }
 
-    @PostMapping(path = "/game/add")
+    @PostMapping(path = "/games")
     @ResponseStatus(HttpStatus.CREATED)
-    public void addGame(@Valid @RequestBody GameData gameData) {
-        gameService.addGame(gameEntityGameDataMapper.toEntity(gameData));
+    public Resource<GameData> addGame(@Valid @RequestBody GameData gameData) {
+        GameEntity gameEntity = gameService.addGame(gameEntityGameDataMapper.toEntity(gameData));
+        GameData gameResource = gameEntityGameDataMapper.toDto(gameEntity);
+        Link selfLink = ControllerLinkBuilder
+                .linkTo(GameApiController.class)
+                .slash("games/" + gameResource.getId())
+                .withSelfRel();
+        return new Resource<>(gameResource, selfLink);
     }
 
     private List<GameData> convertToData(List<GameEntity> all) {

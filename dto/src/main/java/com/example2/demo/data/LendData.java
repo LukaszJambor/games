@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @Setter
 public class LendData {
 
+    private Long id;
     private String title;
     private String gameId;
     private LocalDateTime lendStartDate;

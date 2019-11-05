@@ -36,15 +36,15 @@ public class UserService {
     }
 
     @Transactional
-    public void addUser(UserEntity userEntity) {
+    public UserEntity addUser(UserEntity userEntity) {
         UserEntity userEntityByLogin = userRepository.findUserEntityByLogin(userEntity.getLogin());
-
+        UserEntity savedUser = null;
         if (userEntityByLogin != null && userEntityByLogin.getActive()) {
             throw new UserFoundException();
         }
         if (userEntityByLogin != null && !userEntityByLogin.getActive() && !userEntityByLogin.isActivationHashAvailable(ActivationType.EMAIL)) {
             setToken(userEntityByLogin);
-            userRepository.save(userEntityByLogin);
+            savedUser = userRepository.save(userEntityByLogin);
             addToQueue(userEntityByLogin);
         }
         if (userEntityByLogin == null) {
@@ -53,9 +53,10 @@ public class UserService {
             setWallet(userEntity);
             userEntity.setPassword(bCryptPasswordEncoder.encode(userEntity.getPassword()));
             userEntity.setActive(Boolean.FALSE);
-            userRepository.save(userEntity);
+            savedUser = userRepository.save(userEntity);
             addToQueue(userEntity);
         }
+        return savedUser;
     }
 
     private void setWallet(UserEntity userEntity) {
