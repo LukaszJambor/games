@@ -50,7 +50,7 @@ public class GameController {
         if (StringUtils.isEmpty(name) && StringUtils.isEmpty(producer)) {
             model.addAttribute("games", convertToData(gameService.getGames()));
         } else {
-            model.addAttribute("games", convertToData(gameService.getGames(name, producer)));
+            model.addAttribute("games", convertToData(gameService.getGamesByNameOrProducer(name, producer)));
         }
         model.addAttribute("userId", userService.getLoggedUserId());
         return "listing";

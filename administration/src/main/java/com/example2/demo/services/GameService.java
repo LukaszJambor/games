@@ -1,21 +1,26 @@
 package com.example2.demo.services;
 
+import com.example2.demo.converters.GameEntityGameDataMapper;
 import com.example2.demo.dao.*;
 import com.example2.demo.dao.specifications.GameSpecification;
+import com.example2.demo.data.GameData;
 import com.example2.demo.exception.DuplicatedLendException;
 import com.example2.demo.exception.LendNotFoundException;
 import com.example2.demo.exception.NotEnoughCopiesException;
 import com.example2.demo.exception.NotEnoughMoneyException;
 import com.example2.demo.model.*;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Created by USER on 25.05.2019.
@@ -31,13 +36,15 @@ public class GameService {
     private WalletRepository walletRepository;
     private PaymentHistoryRepository paymentHistoryRepository;
     private CommentRepository commentRepository;
+    private GameEntityGameDataMapper gameEntityGameDataMapper;
 
     @Value("${lend.price}")
     private BigDecimal lendValue;
 
     public GameService(GameRepository gameRepository, GameSpecification gameSpecification,
                        UserRepository userRepository, LendRepository lendRepository, WalletRepository walletRepository,
-                       PaymentHistoryRepository paymentHistoryRepository, CommentRepository commentRepository) {
+                       PaymentHistoryRepository paymentHistoryRepository, CommentRepository commentRepository,
+                       GameEntityGameDataMapper gameEntityGameDataMapper) {
         this.gameRepository = gameRepository;
         this.gameSpecification = gameSpecification;
         this.userRepository = userRepository;
@@ -45,6 +52,7 @@ public class GameService {
         this.walletRepository = walletRepository;
         this.paymentHistoryRepository = paymentHistoryRepository;
         this.commentRepository = commentRepository;
+        this.gameEntityGameDataMapper = gameEntityGameDataMapper;
     }
 
     public GameEntity addGame(GameEntity gameEntity) {
@@ -55,7 +63,15 @@ public class GameService {
         return gameRepository.findAll();
     }
 
-    public List<GameEntity> getGames(String name, String producer) {
+    public ResponseEntity<List<GameData>> getGames(String name, String producer){
+        if (StringUtils.isEmpty(name) && StringUtils.isEmpty(producer)) {
+            return ResponseEntity.ok(convertToData(getGames()));
+        } else {
+            return ResponseEntity.ok(convertToData(getGamesByNameOrProducer(name, producer)));
+        }
+    }
+
+    public List<GameEntity> getGamesByNameOrProducer(String name, String producer) {
         return gameRepository.findAll(gameSpecification.findGameEntityByNameOrProducerName(name, producer));
     }
 
@@ -153,5 +169,11 @@ public class GameService {
     private LendEntity createReturn(LendEntity lendEntity) {
         lendEntity.setLendEndDate(LocalDateTime.now());
         return lendRepository.save(lendEntity);
+    }
+
+    private List<GameData> convertToData(List<GameEntity> all) {
+        return all.stream()
+                .map(game -> gameEntityGameDataMapper.toDto(game))
+                .collect(Collectors.toList());
     }
 }

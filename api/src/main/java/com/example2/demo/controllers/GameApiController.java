@@ -9,12 +9,10 @@ import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(path = "/restapi/v1")
@@ -28,14 +26,9 @@ public class GameApiController {
         this.gameEntityGameDataMapper = gameEntityGameDataMapper;
     }
 
-
     @GetMapping(path = "/games")
     public ResponseEntity<List<GameData>> showGames(@RequestParam(value = "name", required = false) String name, @RequestParam(value = "producer", required = false) String producer) {
-        if (StringUtils.isEmpty(name) && StringUtils.isEmpty(producer)) {
-            return ResponseEntity.ok(convertToData(gameService.getGames()));
-        } else {
-            return ResponseEntity.ok(convertToData(gameService.getGames(name, producer)));
-        }
+        return gameService.getGames(name, producer);
     }
 
     @PostMapping(path = "/games")
@@ -48,11 +41,5 @@ public class GameApiController {
                 .slash("games/" + gameResource.getId())
                 .withSelfRel();
         return new Resource<>(gameResource, selfLink);
-    }
-
-    private List<GameData> convertToData(List<GameEntity> all) {
-        return all.stream()
-                .map(game -> gameEntityGameDataMapper.toDto(game))
-                .collect(Collectors.toList());
     }
 }

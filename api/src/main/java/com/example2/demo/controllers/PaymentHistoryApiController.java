@@ -23,8 +23,9 @@ public class PaymentHistoryApiController {
 
     @GetMapping(value = "/users/{userId}/histories")
     public ResponseEntity<List<PaymentData>> getHistory(@PathVariable("userId") Long userId) {
-        return ResponseEntity.ok(paymentHistoryService.getHistory(userId).stream()
+        List<PaymentData> paymentsResource = paymentHistoryService.getHistory(userId).stream()
                 .map(historyEntry -> paymentEntityToPaymentDataMapper.toDto(historyEntry))
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(paymentsResource);
     }
 }
