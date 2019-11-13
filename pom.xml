@@ -37,6 +37,7 @@
         <quartz.version>2.3.1</quartz.version>
         <guava.version>28.0-jre</guava.version>
         <jjwt.version>0.9.1</jjwt.version>
+        <h2.version>1.4.200</h2.version>
         <start-class>com.example2.demo.DemoApplication</start-class>
     </properties>
 
@@ -139,6 +140,12 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-hateoas</artifactId>
                 <version>${springframework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <version>${h2.version}</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>

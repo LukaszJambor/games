@@ -28,7 +28,7 @@ public class AuthenticationController {
     private CustomUserDetailsService userDetailsService;
 
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody UserData userData) throws Exception {
+    public ResponseEntity<JwtResponse> createAuthenticationToken(@RequestBody UserData userData) throws Exception {
 
         authenticate(userData.getLogin(), userData.getPassword());
         final UserDetails userDetails = userDetailsService.loadUserByUsername(userData.getLogin());

@@ -10,4 +10,5 @@ import org.mapstruct.Mapper;
 public interface UserEntityUserDataMapper {
 
     UserEntity toEntity(UserData userData);
+    UserData toDto(UserEntity userEntity);
 }

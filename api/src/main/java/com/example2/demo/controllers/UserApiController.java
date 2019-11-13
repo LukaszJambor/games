@@ -45,8 +45,10 @@ public class UserApiController {
 
     @PostMapping(value = "/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public void register(@Valid @RequestBody UserData userData) {
+    public Resource<UserData> register(@Valid @RequestBody UserData userData) {
         UserEntity userEntity = userService.addUser(userEntityUserDataMapper.toEntity(userData));
+        UserData userResource = userEntityUserDataMapper.toDto(userEntity);
+        return new Resource<>(userResource);
     }
 
     @GetMapping(value = "/register/confirm/{hash}")

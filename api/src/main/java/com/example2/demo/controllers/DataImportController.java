@@ -28,9 +28,6 @@ public class DataImportController {
         gameDataList.stream()
                 .forEach(gameData -> {
                     GameEntity gameEntity = gameEntityGameDataMapper.toEntity(gameData);
-//                    List<AddressEntity>addressess = new ArrayList<>();
-//                    addressess.add(new AddressEntity());
-//                    gameEntity.getProducer().setAddresses(addressess);
                     gameService.addGame(gameEntity);
                 });
     }
