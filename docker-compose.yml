@@ -1,0 +1,42 @@
+version: "3.7"
+services:
+  import-app:
+    build: D:\backup\workspace\data_import\app
+    container_name: import-app
+    links:
+      - main-app
+    ports:
+      - "8080:9091"
+    networks:
+      - database-network
+    depends_on:
+      - main-app
+    tty: true
+    volumes:
+      - //d/test:/test
+  main-app:
+    build: main/
+    container_name: main-app
+    links:
+      - docker-mysql
+    ports:
+      - "8081:9080"
+    networks:
+      - database-network
+    depends_on:
+      - docker-mysql
+    tty: true
+  docker-mysql:
+    image: pitchanon/docker-mysql
+    container_name: docker-mysql
+    ports:
+      - "6603:3306"
+    networks:
+      - database-network
+    environment:
+      MYSQL_ROOT_PASSWORD: "root"
+      MYSQL_PASSWORD: "root"
+      MYSQL_DATABASE: "db1"
+    tty: true
+networks:
+  database-network: {}
