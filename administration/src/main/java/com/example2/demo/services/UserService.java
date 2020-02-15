@@ -10,7 +10,7 @@ import com.example2.demo.model.UserTokenEntity;
 import com.example2.demo.model.WalletEntity;
 import com.example2.demo.model.enums.ActivationType;
 import com.example2.demo.model.enums.Role;
-import com.example2.demo.queue.RegistrationEmailSender;
+import com.example2.demo.queue.KafkaEmailSender;
 import com.example2.demo.util.SecurityUtil;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -24,14 +24,14 @@ public class UserService {
 
     private UserRepository userRepository;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
-    private RegistrationEmailSender registrationEmailSender;
+    private KafkaEmailSender kafkaEmailSender;
     private HashRepository hashRepository;
 
     public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder,
-                       RegistrationEmailSender registrationEmailSender, HashRepository hashRepository) {
+                       KafkaEmailSender kafkaEmailSender, HashRepository hashRepository) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-        this.registrationEmailSender = registrationEmailSender;
+        this.kafkaEmailSender = kafkaEmailSender;
         this.hashRepository = hashRepository;
     }
 
@@ -88,7 +88,7 @@ public class UserService {
         Map<String, String> map = new HashMap<>();
         map.put("email", userEntity.getLogin());
         map.put("hash", userEntity.getLastHash(ActivationType.EMAIL));
-        registrationEmailSender.send(map);
+        kafkaEmailSender.send(map);
     }
 
     private void setToken(UserEntity userEntity) {

@@ -19,12 +19,14 @@ services:
     container_name: main-app
     links:
       - docker-mysql
+      - kafka
     ports:
       - "8081:9080"
     networks:
       - database-network
     depends_on:
       - docker-mysql
+      - kafka
     tty: true
   docker-mysql:
     image: pitchanon/docker-mysql
@@ -37,6 +39,33 @@ services:
       MYSQL_ROOT_PASSWORD: "root"
       MYSQL_PASSWORD: "root"
       MYSQL_DATABASE: "db1"
+    tty: true
+  kafka:
+    image: wurstmeister/kafka
+    container_name: kafka
+    links:
+      - zookeeper:zk
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: 127.0.0.1
+      KAFKA_ZOOKEEPER_CONNECT: zk:2181
+      KAFKA_MESSAGE_MAX_BYTES: 2147483647
+      KAFKA_CREATE_TOPICS: "registerEmail:1:1"
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - zookeeper
+    networks:
+      - database-network
+    tty: true
+  zookeeper:
+    image: wurstmeister/zookeeper
+    ports:
+      - "2181:2181"
+    networks:
+      - database-network
     tty: true
 networks:
   database-network: {}
