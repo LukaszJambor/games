@@ -35,7 +35,7 @@
         <maven.compiler.version>3.5.1</maven.compiler.version>
         <thymeleaf.vrsion>2.1.6.RELEASE</thymeleaf.vrsion>
         <quartz.version>2.3.1</quartz.version>
-        <guava.version>28.0-jre</guava.version>
+        <guava.version>29.0-jre</guava.version>
         <jjwt.version>0.9.1</jjwt.version>
         <h2.version>1.4.200</h2.version>
         <start-class>com.example2.demo.DemoApplication</start-class>
