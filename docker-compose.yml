@@ -1,12 +1,12 @@
 version: "3.7"
 services:
   import-app:
-    build: D:\backup\workspace\data_import\app
+    build: D:\project\data_import\app
     container_name: import-app
     links:
       - main-app
     ports:
-      - "8080:9091"
+      - "9091:9091"
     networks:
       - database-network
     depends_on:
@@ -20,7 +20,8 @@ services:
     links:
       - docker-mysql
     ports:
-      - "8081:9080"
+      - "9081:9081"
+# outside:inside
     networks:
       - database-network
     depends_on:

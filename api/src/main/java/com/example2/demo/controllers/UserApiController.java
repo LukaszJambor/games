@@ -6,6 +6,7 @@ import com.example2.demo.converters.UserEntityUserDataMapper;
 import com.example2.demo.data.CommentData;
 import com.example2.demo.data.LendData;
 import com.example2.demo.data.UserData;
+import com.example2.demo.exception.ActivationException;
 import com.example2.demo.model.CommentEntity;
 import com.example2.demo.model.LendEntity;
 import com.example2.demo.model.UserEntity;
@@ -20,7 +21,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.rmi.activation.ActivationException;
 import java.util.List;
 import java.util.stream.Collectors;
 
