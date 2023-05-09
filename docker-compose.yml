@@ -21,6 +21,7 @@ services:
       - docker-mysql
     ports:
       - "9081:9081"
+      - "9080:9080"
 # outside:inside
     networks:
       - database-network
