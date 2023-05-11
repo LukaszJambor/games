@@ -24,7 +24,7 @@ public class DataImportController {
     }
 
     @PostMapping(path = "/games")
-    public void aaa(@RequestBody List<GameData> gameDataList) {
+    public void saveGames(@RequestBody List<GameData> gameDataList) {
         gameDataList.stream()
                 .forEach(gameData -> {
                     GameEntity gameEntity = gameEntityGameDataMapper.toEntity(gameData);
