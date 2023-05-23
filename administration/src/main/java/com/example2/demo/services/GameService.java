@@ -10,6 +10,10 @@ import com.example2.demo.exception.NotEnoughCopiesException;
 import com.example2.demo.exception.NotEnoughMoneyException;
 import com.example2.demo.model.*;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,20 +63,21 @@ public class GameService {
         return gameRepository.save(gameEntity);
     }
 
-    public List<GameEntity> getGames() {
-        return gameRepository.findAll();
+    public Page<GameEntity> getGames(Pageable pageable) {
+        return gameRepository.findAll(pageable);
     }
 
-    public ResponseEntity<List<GameData>> getGames(String name, String producer){
+    public Page<GameData> getGames(String name, String producer, int page, int size){
+        Pageable pageable = PageRequest.of(page, size);
         if (StringUtils.isEmpty(name) && StringUtils.isEmpty(producer)) {
-            return ResponseEntity.ok(convertToData(getGames()));
+            return convertToData(getGames(pageable));
         } else {
-            return ResponseEntity.ok(convertToData(getGamesByNameOrProducer(name, producer)));
+            return convertToData(getGamesByNameOrProducer(name, producer, pageable));
         }
     }
 
-    public List<GameEntity> getGamesByNameOrProducer(String name, String producer) {
-        return gameRepository.findAll(gameSpecification.findGameEntityByNameOrProducerName(name, producer));
+    public Page<GameEntity> getGamesByNameOrProducer(String name, String producer, Pageable pageable) {
+        return gameRepository.findAll(gameSpecification.findGameEntityByNameOrProducerName(name, producer), pageable);
     }
 
     public List<LendEntity> getUserGamePanel(Long userId) {
@@ -171,9 +176,10 @@ public class GameService {
         return lendRepository.save(lendEntity);
     }
 
-    private List<GameData> convertToData(List<GameEntity> all) {
-        return all.stream()
+    private Page<GameData> convertToData(Page<GameEntity> all) {
+        List<GameData> gamesData = all.stream()
                 .map(game -> gameEntityGameDataMapper.toDto(game))
                 .collect(Collectors.toList());
+        return new PageImpl<>(gamesData, all.getPageable(), all.getTotalPages());
     }
 }

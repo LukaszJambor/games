@@ -4,6 +4,7 @@ import com.example2.demo.converters.GameEntityGameDataMapper;
 import com.example2.demo.data.GameData;
 import com.example2.demo.model.GameEntity;
 import com.example2.demo.services.GameService;
+import org.springframework.data.domain.Page;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;
@@ -26,9 +27,11 @@ public class GameApiController {
         this.gameEntityGameDataMapper = gameEntityGameDataMapper;
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping(path = "/games")
-    public ResponseEntity<List<GameData>> showGames(@RequestParam(value = "name", required = false) String name, @RequestParam(value = "producer", required = false) String producer) {
-        return gameService.getGames(name, producer);
+    public Page<GameData> showGames(@RequestParam(value = "name", required = false) String name, @RequestParam(value = "producer", required = false) String producer,
+                                          @RequestParam(value = "page") int page, @RequestParam(value = "size") int size) {
+        return gameService.getGames(name, producer, page, size);
     }
 
     @PostMapping(path = "/games")

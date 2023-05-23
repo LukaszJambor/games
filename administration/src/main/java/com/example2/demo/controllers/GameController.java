@@ -6,6 +6,9 @@ import com.example2.demo.data.QueryData;
 import com.example2.demo.model.GameEntity;
 import com.example2.demo.services.GameService;
 import com.example2.demo.services.UserService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -46,11 +49,13 @@ public class GameController {
     }
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public String showGames(@RequestParam(value = "name", required = false) String name, @RequestParam(value = "producer", required = false) String producer, Model model) {
+    public String showGames(@RequestParam(value = "name", required = false) String name, @RequestParam(value = "producer", required = false) String producer, Model model,
+                            @RequestParam(value = "page", required = false) int page, @RequestParam(value = "size", required = false) int size) {
+        Pageable pageable = PageRequest.of(page, size);
         if (StringUtils.isEmpty(name) && StringUtils.isEmpty(producer)) {
-            model.addAttribute("games", convertToData(gameService.getGames()));
+            model.addAttribute("games", convertToData(gameService.getGames(pageable)));
         } else {
-            model.addAttribute("games", convertToData(gameService.getGamesByNameOrProducer(name, producer)));
+            model.addAttribute("games", convertToData(gameService.getGamesByNameOrProducer(name, producer, pageable)));
         }
         model.addAttribute("userId", userService.getLoggedUserId());
         return "listing";
@@ -62,7 +67,7 @@ public class GameController {
         return "search";
     }
 
-    private List<GameData> convertToData(List<GameEntity> all) {
+    private List<GameData> convertToData(Page<GameEntity> all) {
         return all.stream()
                 .map(game -> gameEntityGameDataMapper.toDto(game))
                 .collect(Collectors.toList());

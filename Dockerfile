@@ -1,4 +1,4 @@
-FROM openjdk:8-windowsservercore
+FROM openjdk:8-jdk-alpine
 
 LABEL maintainer="lukasz.jambor83@gmail.com"
 
