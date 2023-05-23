@@ -5,6 +5,7 @@ import com.example2.demo.model.enums.DistributionPath;
 import com.example2.demo.validators.DistributionPathValidator;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.hateoas.RepresentationModel;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
