@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "/restapi/v1")
@@ -32,14 +33,21 @@ public class GameApiController {
         this.pagedResourcesAssembler = pagedResourcesAssembler;
     }
 
-    @ResponseStatus(HttpStatus.OK)
     @GetMapping(path = "/games")
-    public PagedResources<Resource<GameData>> showGames(@RequestParam(value = "name", required = false) String name, @RequestParam(value = "producer", required = false) String producer,
+    public ResponseEntity<PagedResources<Resource<GameData>>> showGames(@RequestParam(value = "name", required = false) String name, @RequestParam(value = "producer", required = false) String producer,
                                               @RequestParam(value = "page") int page, @RequestParam(value = "size") int size) {
-        return pagedResourcesAssembler.toResource(gameService.getGames(name, producer, page, size));
+        return ResponseEntity.ok().body(pagedResourcesAssembler.toResource(gameService.getGames(name, producer, page, size)));
     }
 
-    //dodac walidacje czy taka gra juz istnieje po id, jezeli tak to inny status, jezeli nie to utworzyc, sprawdzic czy link do pojedynczej gry w ogole istnieje
+    @GetMapping(path = "/games/{gameId}")
+    public ResponseEntity<GameData> showGame(@PathVariable("gameId") long id){
+        Optional<GameData> gameData = gameService.getGame(id);
+        return gameData
+                .map(gameDataInternal -> ResponseEntity.ok().body(gameDataInternal))
+                .orElse(ResponseEntity.noContent().build());
+    }
+
+    //dodac walidacje czy taka gra juz istnieje po id, jezeli tak to inny status, jezeli nie to utworzyc
     @PostMapping(path = "/games")
     @ResponseStatus(HttpStatus.CREATED)
     public Resource<GameData> addGame(@Valid @RequestBody GameData gameData) {

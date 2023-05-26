@@ -108,6 +108,11 @@ public class GameService {
         }
     }
 
+    public Optional<GameData> getGame(long id){
+        Optional<GameEntity> gameEntity = gameRepository.findById(id);
+        return gameEntity.map(gameEntityInternal -> gameEntityGameDataMapper.toDto(gameEntityInternal));
+    }
+
     private void createPaymentHistoryRecord(UserEntity userEntity, GameEntity gameEntity) {
         PaymentEntity paymentEntity = new PaymentEntity();
         paymentEntity.setGame(gameEntity);
