@@ -35,28 +35,31 @@ public class GameApiController {
 
     @GetMapping(path = "/games")
     public ResponseEntity<PagedResources<Resource<GameData>>> showGames(@RequestParam(value = "name", required = false) String name, @RequestParam(value = "producer", required = false) String producer,
-                                              @RequestParam(value = "page") int page, @RequestParam(value = "size") int size) {
+                                                                        @RequestParam(value = "page") int page, @RequestParam(value = "size") int size) {
         return ResponseEntity.ok().body(pagedResourcesAssembler.toResource(gameService.getGames(name, producer, page, size)));
     }
 
     @GetMapping(path = "/games/{gameId}")
-    public ResponseEntity<GameData> showGame(@PathVariable("gameId") long id){
+    public ResponseEntity<GameData> showGame(@PathVariable("gameId") long id) {
         Optional<GameData> gameData = gameService.getGame(id);
         return gameData
                 .map(gameDataInternal -> ResponseEntity.ok().body(gameDataInternal))
                 .orElse(ResponseEntity.noContent().build());
     }
 
-    //dodac walidacje czy taka gra juz istnieje po id, jezeli tak to inny status, jezeli nie to utworzyc
     @PostMapping(path = "/games")
     @ResponseStatus(HttpStatus.CREATED)
-    public Resource<GameData> addGame(@Valid @RequestBody GameData gameData) {
+    public ResponseEntity<Resource<GameData>> addGame(@Valid @RequestBody GameData gameData) {
         GameEntity gameEntity = gameService.addGame(gameEntityGameDataMapper.toEntity(gameData));
-        GameData gameResource = gameEntityGameDataMapper.toDto(gameEntity);
-        Link selfLink = ControllerLinkBuilder
-                .linkTo(GameApiController.class)
-                .slash("games/" + gameResource.getId())
-                .withSelfRel();
-        return new Resource<>(gameResource, selfLink);
+        if (gameEntity.getId() != null) {
+            GameData gameResource = gameEntityGameDataMapper.toDto(gameEntity);
+            Link selfLink = ControllerLinkBuilder
+                    .linkTo(GameApiController.class)
+                    .slash("games/" + gameResource.getId())
+                    .withSelfRel();
+            return ResponseEntity.ok().body(new Resource<>(gameResource, selfLink));
+        } else {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
     }
 }

@@ -46,4 +46,7 @@ public class GameData {
     @PositiveOrZero
     @NotNull(message = "quantity message")
     private int quantity;
+
+    @NotNull(message = "barcode required")
+    private Long barcode;
 }

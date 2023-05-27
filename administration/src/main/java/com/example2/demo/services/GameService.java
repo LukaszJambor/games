@@ -10,11 +10,7 @@ import com.example2.demo.exception.NotEnoughCopiesException;
 import com.example2.demo.exception.NotEnoughMoneyException;
 import com.example2.demo.model.*;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -33,6 +29,7 @@ import java.util.stream.Collectors;
 @Component
 public class GameService {
 
+    public static final String BARCODE = "barcode";
     private GameRepository gameRepository;
     private GameSpecification gameSpecification;
     private UserRepository userRepository;
@@ -60,6 +57,12 @@ public class GameService {
     }
 
     public GameEntity addGame(GameEntity gameEntity) {
+        GameEntity gameEntityMatcher = new GameEntity();
+        gameEntityMatcher.setBarcode(gameEntity.getBarcode());
+        if (gameRepository.exists(Example.of(gameEntityMatcher,
+                ExampleMatcher.matching().withMatcher(BARCODE, ExampleMatcher.GenericPropertyMatchers.exact())))) {
+            return gameEntityMatcher;
+        }
         return gameRepository.save(gameEntity);
     }
 
@@ -67,7 +70,7 @@ public class GameService {
         return gameRepository.findAll(pageable);
     }
 
-    public Page<GameData> getGames(String name, String producer, int page, int size){
+    public Page<GameData> getGames(String name, String producer, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         if (StringUtils.isEmpty(name) && StringUtils.isEmpty(producer)) {
             return convertToData(getGames(pageable));
@@ -108,7 +111,7 @@ public class GameService {
         }
     }
 
-    public Optional<GameData> getGame(long id){
+    public Optional<GameData> getGame(long id) {
         Optional<GameEntity> gameEntity = gameRepository.findById(id);
         return gameEntity.map(gameEntityInternal -> gameEntityGameDataMapper.toDto(gameEntityInternal));
     }

@@ -39,4 +39,6 @@ public class GameEntity {
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "game_key")
     private List<CommentEntity> comments;
+
+    private Long barcode;
 }
