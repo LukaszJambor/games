@@ -4,27 +4,25 @@ import com.example2.demo.converters.GameEntityGameDataMapper;
 import com.example2.demo.data.GameData;
 import com.example2.demo.model.GameEntity;
 import com.example2.demo.services.GameService;
-import org.springframework.data.domain.Page;
 import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
-import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 import java.util.Optional;
+
+import static com.example2.demo.utils.LinkAssembler.generateGameLink;
 
 @RestController
 @RequestMapping(path = "/restapi/v1")
 public class GameApiController {
 
-    private GameService gameService;
-    private GameEntityGameDataMapper gameEntityGameDataMapper;
-    private PagedResourcesAssembler<GameData> pagedResourcesAssembler;
+    private final GameService gameService;
+    private final GameEntityGameDataMapper gameEntityGameDataMapper;
+    private final PagedResourcesAssembler<GameData> pagedResourcesAssembler;
 
     public GameApiController(GameService gameService, GameEntityGameDataMapper gameEntityGameDataMapper,
                              PagedResourcesAssembler<GameData> pagedResourcesAssembler) {
@@ -53,11 +51,7 @@ public class GameApiController {
         GameEntity gameEntity = gameService.addGame(gameEntityGameDataMapper.toEntity(gameData));
         if (gameEntity.getId() != null) {
             GameData gameResource = gameEntityGameDataMapper.toDto(gameEntity);
-            Link selfLink = ControllerLinkBuilder
-                    .linkTo(GameApiController.class)
-                    .slash("games/" + gameResource.getId())
-                    .withSelfRel();
-            return ResponseEntity.ok().body(new Resource<>(gameResource, selfLink));
+            return ResponseEntity.ok().body(new Resource<>(gameResource, generateGameLink(gameResource.getId())));
         } else {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }

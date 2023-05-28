@@ -26,25 +26,26 @@ import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.example2.demo.utils.LinkAssembler.generateGameLink;
+
 @RestController
 @RequestMapping(path = "/restapi/v1")
 public class UserApiController {
 
-    private UserService userService;
-    private GameService gameService;
-    private UserEntityUserDataMapper userEntityUserDataMapper;
-    private LendEntityToLendDataMapper lendEntityToLendDataMapper;
-    private CommentEntityToCommentDataMapper commentEntityToCommentDataMapper;
-    private LendService lendService;
-    private GameEntityGameDataMapper gameEntityGameDataMapper;
-    private PagedResourcesAssembler<GameData> pagedResourcesAssembler;
+    private final UserService userService;
+    private final GameService gameService;
+    private final UserEntityUserDataMapper userEntityUserDataMapper;
+    private final LendEntityToLendDataMapper lendEntityToLendDataMapper;
+    private final CommentEntityToCommentDataMapper commentEntityToCommentDataMapper;
+    private final LendService lendService;
+    private final GameEntityGameDataMapper gameEntityGameDataMapper;
+    private final PagedResourcesAssembler<GameData> pagedResourcesAssembler;
 
     public UserApiController(UserService userService, GameService gameService, UserEntityUserDataMapper userEntityUserDataMapper,
                              LendEntityToLendDataMapper lendEntityToLendDataMapper, CommentEntityToCommentDataMapper commentEntityToCommentDataMapper,
@@ -78,7 +79,7 @@ public class UserApiController {
     public ResponseEntity<List<LendData>> lendGames(@PathVariable("userId") Long userId) {
         List<LendEntity> lendEntityList = gameService.getUserGamePanel(userId);
         List<LendData> games = lendEntityList.stream()
-                .map(lendEntity -> lendEntityToLendDataMapper.toDto(lendEntity))
+                .map(lendEntityToLendDataMapper::toDto)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(games);
     }
@@ -126,7 +127,7 @@ public class UserApiController {
     @PreAuthorize(value = "authentication.principal.userId == #userId")
     @GetMapping(value = "users/{userId}/lendHistory")
     public ResponseEntity<PagedResources<Resource<GameData>>> getHistoryLends(@PathVariable("userId") Long userId,
-                                                                              @RequestParam ("page") Integer page,
+                                                                              @RequestParam("page") Integer page,
                                                                               @RequestParam("size") Integer size) {
         Page<GameEntity> historyLendGames = lendService.getHistoryLendGames(userId, page, size);
         Page<GameData> gameData = convertToData(historyLendGames);
@@ -135,8 +136,9 @@ public class UserApiController {
 
     private Page<GameData> convertToData(Page<GameEntity> all) {
         List<GameData> gamesData = all.stream()
-                .map(game -> gameEntityGameDataMapper.toDto(game))
+                .map(gameEntityGameDataMapper::toDto)
                 .collect(Collectors.toList());
+        gamesData.forEach(gameData -> gameData.setLink(generateGameLink(gameData.getId())));
         return new PageImpl<>(gamesData, all.getPageable(), all.getTotalPages());
     }
 }

@@ -5,7 +5,7 @@ import com.example2.demo.model.enums.DistributionPath;
 import com.example2.demo.validators.DistributionPathValidator;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.Link;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -49,4 +49,6 @@ public class GameData {
 
     @NotNull(message = "barcode required")
     private Long barcode;
+
+    private Link link;
 }
