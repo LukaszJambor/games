@@ -1,23 +1,32 @@
 package com.example2.demo.controllers;
 
 import com.example2.demo.converters.CommentEntityToCommentDataMapper;
+import com.example2.demo.converters.GameEntityGameDataMapper;
 import com.example2.demo.converters.LendEntityToLendDataMapper;
 import com.example2.demo.converters.UserEntityUserDataMapper;
 import com.example2.demo.data.CommentData;
+import com.example2.demo.data.GameData;
 import com.example2.demo.data.LendData;
 import com.example2.demo.data.UserData;
 import com.example2.demo.exception.ActivationException;
 import com.example2.demo.model.CommentEntity;
+import com.example2.demo.model.GameEntity;
 import com.example2.demo.model.LendEntity;
 import com.example2.demo.model.UserEntity;
 import com.example2.demo.services.GameService;
+import com.example2.demo.services.LendService;
 import com.example2.demo.services.UserService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -33,14 +42,22 @@ public class UserApiController {
     private UserEntityUserDataMapper userEntityUserDataMapper;
     private LendEntityToLendDataMapper lendEntityToLendDataMapper;
     private CommentEntityToCommentDataMapper commentEntityToCommentDataMapper;
+    private LendService lendService;
+    private GameEntityGameDataMapper gameEntityGameDataMapper;
+    private PagedResourcesAssembler<GameData> pagedResourcesAssembler;
 
     public UserApiController(UserService userService, GameService gameService, UserEntityUserDataMapper userEntityUserDataMapper,
-                             LendEntityToLendDataMapper lendEntityToLendDataMapper, CommentEntityToCommentDataMapper commentEntityToCommentDataMapper) {
+                             LendEntityToLendDataMapper lendEntityToLendDataMapper, CommentEntityToCommentDataMapper commentEntityToCommentDataMapper,
+                             LendService lendService, GameEntityGameDataMapper gameEntityGameDataMapper,
+                             PagedResourcesAssembler<GameData> pagedResourcesAssembler) {
         this.userService = userService;
         this.gameService = gameService;
         this.userEntityUserDataMapper = userEntityUserDataMapper;
         this.lendEntityToLendDataMapper = lendEntityToLendDataMapper;
         this.commentEntityToCommentDataMapper = commentEntityToCommentDataMapper;
+        this.lendService = lendService;
+        this.gameEntityGameDataMapper = gameEntityGameDataMapper;
+        this.pagedResourcesAssembler = pagedResourcesAssembler;
     }
 
     @PostMapping(value = "/register")
@@ -104,5 +121,22 @@ public class UserApiController {
                 .slash("users/" + userId + "/comments/" + commentResource.getId())
                 .withSelfRel();
         return new Resource<>(commentResource, selfLink);
+    }
+
+    @PreAuthorize(value = "authentication.principal.userId == #userId")
+    @GetMapping(value = "users/{userId}/lendHistory")
+    public ResponseEntity<PagedResources<Resource<GameData>>> getHistoryLends(@PathVariable("userId") Long userId,
+                                                                              @RequestParam ("page") Integer page,
+                                                                              @RequestParam("size") Integer size) {
+        Page<GameEntity> historyLendGames = lendService.getHistoryLendGames(userId, page, size);
+        Page<GameData> gameData = convertToData(historyLendGames);
+        return ResponseEntity.ok(pagedResourcesAssembler.toResource(gameData));
+    }
+
+    private Page<GameData> convertToData(Page<GameEntity> all) {
+        List<GameData> gamesData = all.stream()
+                .map(game -> gameEntityGameDataMapper.toDto(game))
+                .collect(Collectors.toList());
+        return new PageImpl<>(gamesData, all.getPageable(), all.getTotalPages());
     }
 }
