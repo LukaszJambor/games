@@ -10,4 +10,5 @@
     <include file="changelog/liquibase-wallet.xml" relativeToChangelogFile="true"/>
     <include file="changelog/liquibase-comments.xml" relativeToChangelogFile="true"/>
     <include file="changelog/liquibase-barCode.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/liquibase-CommentUserId.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

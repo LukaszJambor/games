@@ -23,4 +23,7 @@ public class CommentEntity {
 
     @Column(name = "game_key")
     private Long gameKey;
+
+    @Column(name = "user_id")
+    private Long userId;
 }

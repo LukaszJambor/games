@@ -136,16 +136,36 @@ public class GameService {
         if (lendEntity.isPresent()) {
             LendEntity aReturn = createReturn(lendEntity.get());
             updateStockAfterReturn(lendEntity.get());
-            createBaseComment();
+            createBaseComment(lendEntity.get());
             return aReturn;
         } else {
             throw new LendNotFoundException("lend not found");
         }
     }
 
-    private void createBaseComment() {
+    private void createBaseComment(LendEntity lendEntity) {
+        Optional<CommentEntity> storedCommentEntity = commentRepository.findCommentEntityByUserIdAndGameKey(
+                lendEntity.getUser().getId(), lendEntity.getGame().getId());
+        if (storedCommentEntity.isPresent()) {
+            CommentEntity commentEntityInternal = storedCommentEntity.get();
+            if (StringUtils.isEmpty(commentEntityInternal.getComment())) {
+                createNewUuid(commentEntityInternal);
+            }
+        } else {
+            saveNewComment(lendEntity);
+        }
+    }
+
+    private void createNewUuid(CommentEntity commentEntityInternal) {
+        commentEntityInternal.setUuid(UUID.randomUUID().toString());
+        commentRepository.save(commentEntityInternal);
+    }
+
+    private void saveNewComment(LendEntity lendEntity) {
         CommentEntity commentEntity = new CommentEntity();
         commentEntity.setUuid(UUID.randomUUID().toString());
+        commentEntity.setGameKey(lendEntity.getGame().getId());
+        commentEntity.setUserId(lendEntity.getUser().getId());
         commentRepository.save(commentEntity);
     }
 

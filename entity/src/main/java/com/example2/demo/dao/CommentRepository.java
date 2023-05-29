@@ -9,4 +9,6 @@ import java.util.Optional;
 @Repository
 public interface CommentRepository extends JpaRepository<CommentEntity, Long> {
     Optional<CommentEntity> findCommentEntityByUuid(String uuid);
+
+    Optional<CommentEntity> findCommentEntityByUserIdAndGameKey(Long userId, Long gameKey);
 }
