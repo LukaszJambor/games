@@ -165,7 +165,7 @@ public class GameService {
         CommentEntity commentEntity = new CommentEntity();
         commentEntity.setUuid(UUID.randomUUID().toString());
         commentEntity.setGameKey(lendEntity.getGame().getId());
-        commentEntity.setUserId(lendEntity.getUser().getId());
+        commentEntity.setUser(lendEntity.getUser());
         commentRepository.save(commentEntity);
     }
 
