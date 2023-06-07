@@ -30,8 +30,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.example2.demo.utils.LinkAssembler.generateCommentLink;
 import static com.example2.demo.utils.LinkAssembler.generateGameLink;
 
 @RestController
@@ -122,6 +124,19 @@ public class UserApiController {
                 .slash("users/" + userId + "/comments/" + commentResource.getId())
                 .withSelfRel();
         return new Resource<>(commentResource, selfLink);
+    }
+
+    @PreAuthorize(value = "authentication.principal.userId == #userId")
+    @PatchMapping(value = "/users/{userId}/comments/{commentId}")
+    public ResponseEntity<Resource<CommentData>> updateComment(@PathVariable("userId") Long userId,
+                                                               @PathVariable("commentId") Long commentId,
+                                                               @RequestBody CommentData commentData) {
+        CommentEntity commentEntity = commentEntityToCommentDataMapper.toEntity(commentData);
+        Optional<CommentEntity> commentEntityResponse = gameService.updateComment(commentEntity, commentId, userId);
+        return commentEntityResponse.map(response -> {
+            CommentData responseData = commentEntityToCommentDataMapper.toDto(response);
+            return ResponseEntity.ok().body(new Resource<>(responseData, generateCommentLink(userId, responseData.getId())));
+        }).orElse(ResponseEntity.noContent().build());
     }
 
     @PreAuthorize(value = "authentication.principal.userId == #userId")

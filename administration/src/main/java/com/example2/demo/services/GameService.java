@@ -210,4 +210,12 @@ public class GameService {
                 .collect(Collectors.toList());
         return new PageImpl<>(gamesData, all.getPageable(), all.getTotalPages());
     }
+
+    public Optional<CommentEntity> updateComment(CommentEntity commentEntity, Long commentId, Long userId) {
+        Optional<CommentEntity> commentEntityByUserIdAndId = commentRepository.findCommentEntityByUserIdAndCommentId(userId, commentId);
+        return commentEntityByUserIdAndId.map(commentEntityResponse -> {
+            commentEntityResponse.setComment(commentEntity.getComment());
+            return Optional.of(commentRepository.save(commentEntityResponse));
+        }).orElse(Optional.empty());
+    }
 }
