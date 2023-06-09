@@ -12,6 +12,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * Created by USER on 25.05.2019.
@@ -51,4 +52,6 @@ public class GameData {
     private Long barcode;
 
     private Link link;
+
+    private List<CommentData> commentDataList;
 }
