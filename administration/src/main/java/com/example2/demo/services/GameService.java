@@ -20,7 +20,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * Created by USER on 25.05.2019.
@@ -70,12 +69,12 @@ public class GameService {
         return gameRepository.findAll(pageable);
     }
 
-    public Page<GameData> getGames(String name, String producer, int page, int size) {
+    public Page<GameEntity> getGames(String name, String producer, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         if (StringUtils.isEmpty(name) && StringUtils.isEmpty(producer)) {
-            return convertToData(getGames(pageable));
+            return getGames(pageable);
         } else {
-            return convertToData(getGamesByNameOrProducer(name, producer, pageable));
+            return getGamesByNameOrProducer(name, producer, pageable);
         }
     }
 
@@ -202,13 +201,6 @@ public class GameService {
     private LendEntity createReturn(LendEntity lendEntity) {
         lendEntity.setLendEndDate(LocalDateTime.now());
         return lendRepository.save(lendEntity);
-    }
-
-    private Page<GameData> convertToData(Page<GameEntity> all) {
-        List<GameData> gamesData = all.stream()
-                .map(game -> gameEntityGameDataMapper.toDto(game))
-                .collect(Collectors.toList());
-        return new PageImpl<>(gamesData, all.getPageable(), all.getTotalPages());
     }
 
     public Optional<CommentEntity> updateComment(CommentEntity commentEntity, Long commentId, Long userId) {
