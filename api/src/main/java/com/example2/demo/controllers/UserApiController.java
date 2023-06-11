@@ -13,6 +13,7 @@ import com.example2.demo.model.CommentEntity;
 import com.example2.demo.model.GameEntity;
 import com.example2.demo.model.LendEntity;
 import com.example2.demo.model.UserEntity;
+import com.example2.demo.services.CommentService;
 import com.example2.demo.services.GameService;
 import com.example2.demo.services.LendService;
 import com.example2.demo.services.UserService;
@@ -47,12 +48,15 @@ public class UserApiController {
     private final CommentEntityToCommentDataMapper commentEntityToCommentDataMapper;
     private final LendService lendService;
     private final GameEntityGameDataMapper gameEntityGameDataMapper;
-    private final PagedResourcesAssembler<GameData> pagedResourcesAssembler;
+    private final PagedResourcesAssembler<GameData> gameDataPagedResourcesAssembler;
+    private final PagedResourcesAssembler<CommentData> commentDataPagedResourcesAssembler;
+    private final CommentService commentService;
 
     public UserApiController(UserService userService, GameService gameService, UserEntityUserDataMapper userEntityUserDataMapper,
                              LendEntityToLendDataMapper lendEntityToLendDataMapper, CommentEntityToCommentDataMapper commentEntityToCommentDataMapper,
                              LendService lendService, GameEntityGameDataMapper gameEntityGameDataMapper,
-                             PagedResourcesAssembler<GameData> pagedResourcesAssembler) {
+                             PagedResourcesAssembler<GameData> pagedResourcesAssembler, CommentService commentService,
+                             PagedResourcesAssembler<CommentData> commentDataPagedResourcesAssembler) {
         this.userService = userService;
         this.gameService = gameService;
         this.userEntityUserDataMapper = userEntityUserDataMapper;
@@ -60,7 +64,9 @@ public class UserApiController {
         this.commentEntityToCommentDataMapper = commentEntityToCommentDataMapper;
         this.lendService = lendService;
         this.gameEntityGameDataMapper = gameEntityGameDataMapper;
-        this.pagedResourcesAssembler = pagedResourcesAssembler;
+        this.gameDataPagedResourcesAssembler = pagedResourcesAssembler;
+        this.commentService = commentService;
+        this.commentDataPagedResourcesAssembler = commentDataPagedResourcesAssembler;
     }
 
     @PostMapping(value = "/register")
@@ -140,13 +146,30 @@ public class UserApiController {
     }
 
     @PreAuthorize(value = "authentication.principal.userId == #userId")
+    @GetMapping(value = "/users/{userId}/comments")
+    public ResponseEntity<Page<CommentData>> getAllCommentsByUser(@PathVariable("userId") Long userId,
+                                                                  @RequestParam("page") Integer page,
+                                                                  @RequestParam("size") Integer size) {
+        Page<CommentEntity> commentEntities = commentService.getAllUserComments(userId, page, size);
+        List<CommentData> commentDataList = commentEntities.stream()
+                .map(commentEntity -> {
+                    CommentData commentData = commentEntityToCommentDataMapper.toDto(commentEntity);
+                    commentData.setLink(generateCommentLink(userId, commentData.getId()));
+                    return commentData;
+                })
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(new PageImpl<>(commentDataList, commentEntities.getPageable(), commentEntities.getTotalPages()));
+    }
+
+    @PreAuthorize(value = "authentication.principal.userId == #userId")
     @GetMapping(value = "users/{userId}/lendHistory")
     public ResponseEntity<PagedResources<Resource<GameData>>> getHistoryLends(@PathVariable("userId") Long userId,
                                                                               @RequestParam("page") Integer page,
                                                                               @RequestParam("size") Integer size) {
         Page<GameEntity> historyLendGames = lendService.getHistoryLendGames(userId, page, size);
         Page<GameData> gameData = convertToData(historyLendGames);
-        return ResponseEntity.ok(pagedResourcesAssembler.toResource(gameData));
+        return ResponseEntity.ok(gameDataPagedResourcesAssembler.toResource(gameData));
     }
 
     private Page<GameData> convertToData(Page<GameEntity> all) {
