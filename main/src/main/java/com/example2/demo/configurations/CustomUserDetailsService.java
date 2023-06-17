@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
+    private static final String ROLE = "ROLE_";
     private UserRepository userRepository;
 
     public CustomUserDetailsService(UserRepository userRepository) {
@@ -33,9 +34,6 @@ public class CustomUserDetailsService implements UserDetailsService {
         if (userEntityByLogin == null) {
             throw new UsernameNotFoundException(login);
         }
-        Set<GrantedAuthority> role = new HashSet<>();
-        userEntityByLogin.getRoles().stream()
-                .forEach(roleInternal -> role.add(new SimpleGrantedAuthority(role.toString())));
         return new CustomUser(userEntityByLogin.getLogin(), userEntityByLogin.getPassword(), Boolean.TRUE, Boolean.TRUE,
                 Boolean.TRUE, Boolean.TRUE, buildUserAuthority(userEntityByLogin.getRoles()), userEntityByLogin.getId());
     }
@@ -43,7 +41,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     private List<GrantedAuthority> buildUserAuthority(List<RoleEntity> userRoles) {
 
         return userRoles.stream()
-                .map(role -> new SimpleGrantedAuthority(role.getRole().toString()))
+                .map(role -> new SimpleGrantedAuthority(ROLE + role.getRole().toString()))
                 .collect(Collectors.toList());
     }
 }

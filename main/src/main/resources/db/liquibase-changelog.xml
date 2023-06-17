@@ -13,4 +13,5 @@
     <include file="changelog/liquibase-CommentUserId.xml" relativeToChangelogFile="true"/>
     <include file="changelog/liquibase-comments-index.xml" relativeToChangelogFile="true"/>
     <include file="changelog/liquibase-comments-user-index.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/liquibase-add-admin-role-for-main-account.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

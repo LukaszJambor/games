@@ -17,4 +17,7 @@ public class RoleEntity {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @Column(name = "user_key")
+    private Long userKey;
 }

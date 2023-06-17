@@ -107,4 +107,8 @@ public class UserService {
         roleEntityList.add(roleEntity);
         userEntity.setRoles(roleEntityList);
     }
+
+    public List<Role> getUserRoles(Long userId) {
+        return userRepository.findUserRoles(userId);
+    }
 }
