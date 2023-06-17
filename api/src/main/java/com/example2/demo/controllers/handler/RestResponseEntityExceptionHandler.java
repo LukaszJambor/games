@@ -39,7 +39,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     @ExceptionHandler(value = LendNotFoundException.class)
     protected ResponseEntity<Object> duplicatedGameHandler(LendNotFoundException ex) {
         Map<String, Object> body = new LinkedHashMap<>();
-        body.put("error", "lend not found" + ex.getMessage());
+        body.put("error", ex.getMessage());
         return new ResponseEntity<>(body, new HttpHeaders(), HttpStatus.FORBIDDEN);
     }
 
