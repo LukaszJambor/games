@@ -1,8 +1,6 @@
 package com.example2.demo.controllers.handler;
 
-import com.example2.demo.exception.ActivationException;
-import com.example2.demo.exception.DuplicatedLendException;
-import com.example2.demo.exception.LendNotFoundException;
+import com.example2.demo.exception.*;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -41,6 +39,20 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("error", ex.getMessage());
         return new ResponseEntity<>(body, new HttpHeaders(), HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(value = DuplicatedRoleException.class)
+    protected ResponseEntity<Object> duplicatedRole(DuplicatedRoleException ex) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("error", ex.getMessage());
+        return new ResponseEntity<>(body, new HttpHeaders(), HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(value = UserNotFoundException.class)
+    protected ResponseEntity<Object> userNotFound(UserNotFoundException ex) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("error", ex.getMessage());
+        return new ResponseEntity<>(body, new HttpHeaders(), HttpStatus.NO_CONTENT);
     }
 
     @Override

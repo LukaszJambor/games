@@ -3,7 +3,9 @@ package com.example2.demo.services;
 import com.example2.demo.dao.HashRepository;
 import com.example2.demo.dao.UserRepository;
 import com.example2.demo.exception.ActivationException;
+import com.example2.demo.exception.DuplicatedRoleException;
 import com.example2.demo.exception.UserFoundException;
+import com.example2.demo.exception.UserNotFoundException;
 import com.example2.demo.model.RoleEntity;
 import com.example2.demo.model.UserEntity;
 import com.example2.demo.model.UserTokenEntity;
@@ -18,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class UserService {
@@ -110,5 +113,34 @@ public class UserService {
 
     public List<Role> getUserRoles(Long userId) {
         return userRepository.findUserRoles(userId);
+    }
+
+    public UserEntity addRole(Long userId, List<Role> roles) {
+        Optional<UserEntity> findUserById = userRepository.findById(userId);
+        return findUserById.map(user -> addRoles(user, roles))
+                .orElseThrow(() -> new UserNotFoundException("user not found"));
+    }
+
+    private UserEntity addRoles(UserEntity user, List<Role> roles) {
+        List<RoleEntity> userRoles = user.getRoles();
+        userRoles.stream()
+                .filter(userRole -> roles.contains(userRole.getRole()))
+                .findAny()
+                .ifPresent(role -> {
+                    throw new DuplicatedRoleException("duplicated role");
+                });
+
+        userRoles.addAll(roles.stream()
+                .map(role -> createRoleEntity(user, role))
+                .collect(Collectors.toList()));
+        UserEntity savedUser = userRepository.save(user);
+        return savedUser;
+    }
+
+    private static RoleEntity createRoleEntity(UserEntity user, Role role) {
+        RoleEntity roleEntity = new RoleEntity();
+        roleEntity.setRole(role);
+        roleEntity.setUserKey(user.getId());
+        return roleEntity;
     }
 }
