@@ -17,6 +17,8 @@ services:
   main-app:
     build: main/
     container_name: main-app
+    environment:
+      - "SPRING_PROFILES_ACTIVE=dev"
     links:
       - docker-mysql
     ports:
