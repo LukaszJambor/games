@@ -8,13 +8,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.PagedResources;
-import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.PagedModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -37,11 +37,11 @@ public class GameApiController {
     }
 
     @GetMapping(path = "/games")
-    public ResponseEntity<PagedResources<Resource<GameData>>> showGames(@RequestParam(value = "name", required = false) String name, @RequestParam(value = "producer", required = false) String producer,
+    public ResponseEntity<PagedModel<EntityModel<GameData>>> showGames(@RequestParam(value = "name", required = false) String name, @RequestParam(value = "producer", required = false) String producer,
                                                                         @RequestParam(value = "page") int page, @RequestParam(value = "size") int size) {
         Page<GameEntity> games = gameService.getGames(name, producer, page, size);
         Page<GameData> gameData = convertToData(games);
-        return ResponseEntity.ok().body(pagedResourcesAssembler.toResource(gameData));
+        return ResponseEntity.ok().body(pagedResourcesAssembler.toModel(gameData));
     }
 
     @GetMapping(path = "/games/{gameId}")
@@ -55,11 +55,11 @@ public class GameApiController {
 
     @PostMapping(path = "/games")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Resource<GameData>> addGame(@Valid @RequestBody GameData gameData) {
+    public ResponseEntity<EntityModel<GameData>> addGame(@Valid @RequestBody GameData gameData) {
         GameEntity gameEntity = gameService.addGame(gameEntityGameDataMapper.toEntity(gameData));
         if (gameEntity.getId() != null) {
             GameData gameResource = gameEntityGameDataMapper.toDto(gameEntity);
-            return ResponseEntity.ok().body(new Resource<>(gameResource, generateGameLink(gameResource.getId())));
+            return ResponseEntity.ok().body(EntityModel.of(gameResource, generateGameLink(gameResource.getId())));
         } else {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }

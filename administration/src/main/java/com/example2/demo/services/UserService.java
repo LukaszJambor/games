@@ -27,14 +27,13 @@ public class UserService {
 
     private UserRepository userRepository;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
-    private RegistrationEmailSender registrationEmailSender;
+//    private RegistrationEmailSender registrationEmailSender;
     private HashRepository hashRepository;
 
-    public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder,
-                       RegistrationEmailSender registrationEmailSender, HashRepository hashRepository) {
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, HashRepository hashRepository) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-        this.registrationEmailSender = registrationEmailSender;
+//        this.registrationEmailSender = registrationEmailSender;
         this.hashRepository = hashRepository;
     }
 
@@ -91,7 +90,7 @@ public class UserService {
         Map<String, String> map = new HashMap<>();
         map.put("email", userEntity.getLogin());
         map.put("hash", userEntity.getLastHash(ActivationType.EMAIL));
-        registrationEmailSender.send(map);
+//        registrationEmailSender.send(map);
     }
 
     private void setToken(UserEntity userEntity) {

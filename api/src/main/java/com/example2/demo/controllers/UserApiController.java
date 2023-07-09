@@ -21,15 +21,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.PagedResources;
-import org.springframework.hateoas.Resource;
-import org.springframework.hateoas.mvc.ControllerLinkBuilder;
+import org.springframework.hateoas.PagedModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -71,10 +71,10 @@ public class UserApiController {
 
     @PostMapping(value = "/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public Resource<UserData> register(@Valid @RequestBody UserData userData) {
+    public EntityModel<UserData> register(@Valid @RequestBody UserData userData) {
         UserEntity userEntity = userService.addUser(userEntityUserDataMapper.toEntity(userData));
         UserData userResource = userEntityUserDataMapper.toDto(userEntity);
-        return new Resource<>(userResource);
+        return EntityModel.of(userResource);
     }
 
     @GetMapping(value = "/register/confirm/{hash}")
@@ -95,53 +95,53 @@ public class UserApiController {
     @PreAuthorize(value = "authentication.principal.userId == #userId")
     @PostMapping(value = "/users/{userId}/lends/{gameId}")
     @ResponseStatus(HttpStatus.CREATED)
-    public Resource<LendData> createLend(@PathVariable("userId") Long userId, @PathVariable("gameId") Long gameId) {
+    public EntityModel<LendData> createLend(@PathVariable("userId") Long userId, @PathVariable("gameId") Long gameId) {
         LendEntity lend = gameService.createLend(userId, gameId);
         LendData lendResource = lendEntityToLendDataMapper.toDto(lend);
-        Link selfLink = ControllerLinkBuilder
+        Link selfLink = WebMvcLinkBuilder
                 .linkTo(UserApiController.class)
                 .slash("users/" + userId + "/lends/" + lendResource.getId())
                 .withSelfRel();
-        return new Resource<>(lendResource, selfLink);
+        return EntityModel.of(lendResource, selfLink);
     }
 
     @PreAuthorize(value = "authentication.principal.userId == #userId")
     @PutMapping(value = "/users/{userId}/returns/{gameId}")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public Resource<LendData> createReturn(@PathVariable("userId") Long userId, @PathVariable("gameId") Long gameId) {
+    public EntityModel<LendData> createReturn(@PathVariable("userId") Long userId, @PathVariable("gameId") Long gameId) {
         LendEntity aReturn = gameService.createReturn(userId, gameId);
         LendData returnResource = lendEntityToLendDataMapper.toDto(aReturn);
-        Link selfLink = ControllerLinkBuilder
+        Link selfLink = WebMvcLinkBuilder
                 .linkTo(UserApiController.class)
                 .slash("users/" + userId + "/returns/" + returnResource.getId())
                 .withSelfRel();
-        return new Resource<>(returnResource, selfLink);
+        return EntityModel.of(returnResource, selfLink);
     }
 
     @PreAuthorize(value = "authentication.principal.userId == #userId")
     @PostMapping(value = "/users/{userId}/comments")
     @ResponseStatus(HttpStatus.CREATED)
-    public Resource<CommentData> commentView(@PathVariable("userId") Long userId, @RequestBody CommentData commentData) {
+    public EntityModel<CommentData> commentView(@PathVariable("userId") Long userId, @RequestBody CommentData commentData) {
         CommentEntity commentEntity = commentEntityToCommentDataMapper.toEntity(commentData);
         CommentEntity comment = gameService.createComment(commentEntity);
         CommentData commentResource = commentEntityToCommentDataMapper.toDto(comment);
-        Link selfLink = ControllerLinkBuilder
+        Link selfLink = WebMvcLinkBuilder
                 .linkTo(UserApiController.class)
                 .slash("users/" + userId + "/comments/" + commentResource.getId())
                 .withSelfRel();
-        return new Resource<>(commentResource, selfLink);
+        return EntityModel.of(commentResource, selfLink);
     }
 
     @PreAuthorize(value = "authentication.principal.userId == #userId")
     @PatchMapping(value = "/users/{userId}/comments/{commentId}")
-    public ResponseEntity<Resource<CommentData>> updateComment(@PathVariable("userId") Long userId,
+    public ResponseEntity<EntityModel<CommentData>> updateComment(@PathVariable("userId") Long userId,
                                                                @PathVariable("commentId") Long commentId,
                                                                @RequestBody CommentData commentData) {
         CommentEntity commentEntity = commentEntityToCommentDataMapper.toEntity(commentData);
         Optional<CommentEntity> commentEntityResponse = gameService.updateComment(commentEntity, commentId, userId);
         return commentEntityResponse.map(response -> {
             CommentData responseData = commentEntityToCommentDataMapper.toDto(response);
-            return ResponseEntity.ok().body(new Resource<>(responseData, generateCommentLink(userId, responseData.getId())));
+            return ResponseEntity.ok().body(EntityModel.of(responseData, generateCommentLink(userId, responseData.getId())));
         }).orElse(ResponseEntity.noContent().build());
     }
 
@@ -164,12 +164,12 @@ public class UserApiController {
 
     @PreAuthorize(value = "authentication.principal.userId == #userId")
     @GetMapping(value = "users/{userId}/lendHistory")
-    public ResponseEntity<PagedResources<Resource<GameData>>> getHistoryLends(@PathVariable("userId") Long userId,
+    public ResponseEntity<PagedModel<EntityModel<GameData>>> getHistoryLends(@PathVariable("userId") Long userId,
                                                                               @RequestParam("page") Integer page,
                                                                               @RequestParam("size") Integer size) {
         Page<GameEntity> historyLendGames = lendService.getHistoryLendGames(userId, page, size);
         Page<GameData> gameData = convertToData(historyLendGames);
-        return ResponseEntity.ok(gameDataPagedResourcesAssembler.toResource(gameData));
+        return ResponseEntity.ok(gameDataPagedResourcesAssembler.toModel(gameData));
     }
 
     private Page<GameData> convertToData(Page<GameEntity> all) {

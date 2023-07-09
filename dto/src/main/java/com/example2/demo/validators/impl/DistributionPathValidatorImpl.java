@@ -3,8 +3,8 @@ package com.example2.demo.validators.impl;
 import com.example2.demo.model.enums.DistributionPath;
 import com.example2.demo.validators.DistributionPathValidator;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 public class DistributionPathValidatorImpl implements ConstraintValidator<DistributionPathValidator, DistributionPath> {
 

@@ -3,14 +3,14 @@ package com.example2.demo.data;
 import com.example2.demo.model.enums.Currency;
 import com.example2.demo.model.enums.DistributionPath;
 import com.example2.demo.validators.DistributionPathValidator;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.hateoas.Link;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 import java.math.BigDecimal;
 import java.util.List;
 

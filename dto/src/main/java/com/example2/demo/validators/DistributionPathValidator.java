@@ -2,8 +2,8 @@ package com.example2.demo.validators;
 
 import com.example2.demo.validators.impl.DistributionPathValidatorImpl;
 
-import javax.validation.Constraint;
-import javax.validation.Payload;
+import jakarta.validation.Constraint;
+import jakarta.validation.Payload;
 import java.lang.annotation.*;
 
 @Documented

@@ -4,7 +4,7 @@ import com.example2.demo.model.enums.DistributionPath;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.List;
 
 /**
@@ -16,7 +16,7 @@ import java.util.List;
 @Entity
 public class GameEntity {
 
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
 
